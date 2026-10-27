@@ -22,17 +22,26 @@ body{font-family:Arial,sans-serif;background:#f5f5f5;padding:15px;font-size:13px
 .mapel-wrapper{display:flex;align-items:center;gap:4px;flex:1}
 .mapel-wrapper select{flex:1}
 .btn-manage-mapel{padding:3px 8px;font-size:11px;background:#3498db;color:#fff;border:none;border-radius:3px;cursor:pointer;white-space:nowrap}
-.structure-panel,.bulk-excel{display:flex;gap:8px;margin-bottom:12px;padding:10px 12px;border-radius:4px;align-items:center;flex-wrap:wrap;font-size:12px}
-.structure-panel{background:#fff8e1;border:1px dashed #f39c12}
-.structure-panel strong{color:#7d6608}
-.bulk-excel{background:#eef6ff;border:1px dashed #3498db}
-.structure-panel button,.bulk-excel button{padding:6px 12px;font-size:11px;border-radius:3px;border:none;color:#fff;cursor:pointer}
+.unified-toolbar-wrapper{display:flex;gap:8px;margin-bottom:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:#f8f9fa;padding:8px 12px;border:1px solid #e0e0e0;border-radius:6px}
+.unified-menu-dropdown{position:relative}
+.btn-menu-toggle{background:#2c3e50;color:#fff;font-weight:bold;padding:8px 14px;border:none;border-radius:4px;cursor:pointer;font-size:12px;display:inline-flex;align-items:center;gap:6px;transition:background .2s}
+.btn-menu-toggle:hover{background:#1a252f}
+.menu-dropdown-content{display:none;position:absolute;top:100%;left:0;z-index:2000;background:#fff;border:1px solid #ccc;box-shadow:0 6px 18px rgba(0,0,0,0.18);border-radius:6px;padding:10px;min-width:280px;margin-top:4px}
+.menu-dropdown-content.show{display:grid;grid-template-columns:1fr;gap:10px}
+.menu-group{display:flex;flex-direction:column;gap:4px}
+.menu-group-title{font-size:11px;font-weight:bold;color:#7f8c8d;text-transform:uppercase;letter-spacing:0.5px;padding-bottom:3px;border-bottom:1px solid #eee;margin-bottom:2px}
+.menu-item{background:#f0f4f8;color:#2c3e50;border:none;padding:8px 10px;text-align:left;border-radius:4px;font-size:12px;cursor:pointer;transition:background .15s;display:flex;align-items:center;gap:6px}
+.menu-item:hover{background:#3498db;color:#fff}
+.menu-item.item-danger{color:#c0392b;background:#fdf2e9}
+.menu-item.item-danger:hover{background:#e74c3c;color:#fff}
+.quick-excel-bar{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.quick-excel-bar button{padding:6px 12px;font-size:11px;border-radius:4px;border:none;color:#fff;cursor:pointer}
 .btn-manage-siswa{background:#2874a6}.btn-manage-uh{background:#8e44ad}.btn-manage-tugas{background:#d35400}
 .btn-export-multi{background:#e67e22}.btn-print-multi{background:#34495e}
-.tabs{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:12px;border-bottom:1px solid #ccc;padding-bottom:8px;align-items:center}
-.tab-btn{padding:6px 12px;background:#f0f0f0;border:1px solid #ccc;cursor:pointer;font-size:11px;border-radius:3px 3px 0 0}
+.tabs{display:flex;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;gap:4px;margin-bottom:12px;border-bottom:1px solid #ccc;padding-bottom:8px;align-items:center}
+.tab-btn{padding:8px 12px;background:#f0f0f0;border:1px solid #ccc;cursor:pointer;font-size:11px;border-radius:4px 4px 0 0;white-space:nowrap;flex-shrink:0}
 .tab-btn.active{background:#333;color:#fff;border-color:#333}
-.btn-manage-class{padding:5px 10px;font-size:11px;background:#16a085;color:#fff;border:none;border-radius:3px;cursor:pointer;margin-left:auto}
+.btn-manage-class{padding:7px 12px;font-size:11px;background:#16a085;color:#fff;border:none;border-radius:4px;cursor:pointer;white-space:nowrap;flex-shrink:0;margin-left:auto}
 .class-name-edit{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:12px;flex-wrap:wrap}
 .class-name-edit input{border:1px solid #ccc;padding:4px 8px;font-size:12px;width:220px}
 .class-siswa-badge{font-size:11px;background:#d6eaf8;color:#1a5276;padding:4px 10px;border-radius:3px;font-weight:bold}
@@ -41,9 +50,13 @@ body{font-family:Arial,sans-serif;background:#f5f5f5;padding:15px;font-size:13px
 .excel-btns{display:flex;gap:5px;flex-wrap:wrap}
 .excel-btns button{padding:5px 10px;font-size:11px;border-radius:3px;border:none;color:#fff;cursor:pointer}
 .btn-template{background:#3498db}.btn-import{background:#27ae60}.btn-export{background:#e67e22}
-table{width:100%;border-collapse:collapse;font-size:11px}
+.table-container{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:8px;border:1px solid #ccc;border-radius:4px}
+table{width:100%;border-collapse:collapse;font-size:11px;min-width:650px}
 th,td{border:1px solid #999;padding:5px;text-align:center}
 th{background:#f8f8f8;font-weight:bold;font-size:11px}
+.col-sticky-1{position:sticky;left:0;z-index:5;background:#fff;width:32px;min-width:32px}
+.col-sticky-2{position:sticky;left:32px;z-index:5;background:#fff;border-right:2px solid #888!important;min-width:130px}
+th.col-sticky-1,th.col-sticky-2{z-index:6;background:#f8f8f8}
 td input{width:100%;border:none;text-align:center;background:transparent;font-size:11px;outline:none;padding:2px}
 td input:focus{background:#ffffcc}
 .nama-input{text-align:left!important}
@@ -137,6 +150,28 @@ button:hover{opacity:.88}
 .mapping-row{display:flex;gap:10px;align-items:center;margin-bottom:8px;font-size:12px}
 .mapping-row select{flex:1;padding:5px}
 .mapping-row .sheet-name{background:#f0f0f0;padding:5px 8px;border-radius:3px;min-width:120px}
+@media (max-width: 768px) {
+  body{padding:6px;font-size:12px}
+  .container{padding:10px;border-radius:6px}
+  .header h1{font-size:16px}
+  .info-row{grid-template-columns:1fr;gap:8px}
+  .unified-toolbar-wrapper{flex-direction:column;align-items:stretch;gap:8px}
+  .btn-menu-toggle{width:100%;justify-content:center;padding:10px;font-size:13px}
+  .menu-dropdown-content{width:100%;min-width:auto;position:relative;top:0}
+  .quick-excel-bar{width:100%;justify-content:space-between}
+  .quick-excel-bar button{flex:1;padding:8px 4px;text-align:center;font-size:11px}
+  .class-name-edit{flex-direction:column;align-items:stretch;gap:6px}
+  .class-name-edit input{width:100%;font-size:13px;padding:6px}
+  .btn-container{flex-direction:column;gap:8px;align-items:stretch}
+  .btn-group{width:100%;justify-content:space-between;flex-wrap:wrap;gap:4px}
+  .btn-group button{flex:1 1 30%;min-width:85px;padding:9px 4px;font-size:11px;text-align:center}
+  .permanent-panel{flex-direction:column;align-items:stretch}
+  .permanent-actions{flex-direction:column}
+  .permanent-actions button{width:100%;padding:10px}
+  .modal{padding:16px;width:96%;max-height:92vh}
+  td input{padding:6px 3px;font-size:12px}
+  .nama-input{min-width:120px}
+}
 @media print{
 body{background:#fff;padding:0}
 .container{border:none;padding:0;max-width:100%}
@@ -184,20 +219,44 @@ th{background:#eee!important;-webkit-print-color-adjust:exact}
     <div><label>Guru Pengampu:</label><input type="text" id="guru" value="[Nama Anda, S.Pd.]" oninput="autoSave()"></div>
   </div>
 
-  <div class="structure-panel no-print">
-    <strong>📐 Struktur Penilaian:</strong>
-    <button class="btn-manage-siswa" id="btnManageSiswa" onclick="openSiswaManager()">👥 Kelola Jumlah Siswa</button>
-    <button class="btn-manage-uh" id="btnManageUh" onclick="openStrukturManager('uh')">📝 Kelola Ulangan Harian</button>
-    <button class="btn-manage-tugas" id="btnManageTugas" onclick="openStrukturManager('tugas')"> Kelola Tugas</button>
+  <div class="unified-toolbar-wrapper no-print">
+    <div class="unified-menu-dropdown">
+      <button class="btn-menu-toggle" onclick="toggleUnifiedMenu(event)">☰ Menu Utama & Kelola ▾</button>
+      <div class="menu-dropdown-content" id="unifiedMenuDropdown">
+        <div class="menu-group">
+          <div class="menu-group-title">📐 Struktur & Kelas</div>
+          <button class="menu-item" id="btnManageSiswa" onclick="openSiswaManager();closeUnifiedMenu();">👥 Kelola Jumlah Siswa</button>
+          <button class="menu-item" id="btnManageUh" onclick="openStrukturManager('uh');closeUnifiedMenu();">📝 Kelola Ulangan Harian</button>
+          <button class="menu-item" id="btnManageTugas" onclick="openStrukturManager('tugas');closeUnifiedMenu();">📋 Kelola Tugas</button>
+          <button class="menu-item" onclick="openClassManager();closeUnifiedMenu();">🏫 Kelola Kelas & Mapel</button>
+        </div>
+        <div class="menu-group">
+          <div class="menu-group-title">📊 Import & Export Excel</div>
+          <button class="menu-item" onclick="downloadTemplate();closeUnifiedMenu();">📋 Template (Kelas Ini)</button>
+          <button class="menu-item" onclick="downloadTemplateAll();closeUnifiedMenu();">📋 Template (Semua Kelas)</button>
+          <button class="menu-item" onclick="document.getElementById('excelFile').click();closeUnifiedMenu();">📥 Import Excel (Kelas Ini)</button>
+          <button class="menu-item" onclick="document.getElementById('excelFileAll').click();closeUnifiedMenu();">📥 Import Excel (Semua Kelas)</button>
+          <button class="menu-item" onclick="exportExcel();closeUnifiedMenu();">💾 Export Excel (Kelas Ini)</button>
+          <button class="menu-item" onclick="openExportModal();closeUnifiedMenu();">💾 Export Pilihan Kelas</button>
+        </div>
+        <div class="menu-group">
+          <div class="menu-group-title">🖨️ Cetak & Cadangan Data</div>
+          <button class="menu-item" onclick="printCurrentClass();closeUnifiedMenu();">🖨️ Cetak Kelas Ini</button>
+          <button class="menu-item" onclick="openPrintModal();closeUnifiedMenu();">🖨️ Cetak Pilihan Kelas</button>
+          <button class="menu-item" onclick="printAllClasses();closeUnifiedMenu();">🖨️ Cetak Semua Kelas</button>
+          <button class="menu-item" onclick="backupData();closeUnifiedMenu();">💾 Backup JSON</button>
+          <button class="menu-item" onclick="document.getElementById('restoreFile').click();closeUnifiedMenu();">📂 Restore JSON</button>
+          <button class="menu-item item-danger" onclick="showResetModal();closeUnifiedMenu();">🗑️ Reset Data</button>
+        </div>
+      </div>
+    </div>
+    <div class="quick-excel-bar">
+      <button class="btn-template" onclick="downloadTemplate()" title="Download Template Excel Kelas Ini">📋 Template</button>
+      <button class="btn-import" onclick="document.getElementById('excelFile').click()" title="Import Excel ke Kelas Ini">📥 Import</button>
+      <button class="btn-export" onclick="exportExcel()" title="Export Excel Kelas Ini">💾 Export</button>
+    </div>
   </div>
-
-  <div class="bulk-excel no-print">
-    <strong>📊 Sinkron & Export:</strong>
-    <button class="btn-template" onclick="downloadTemplateAll()">📋 Download Template</button>
-    <button class="btn-import" onclick="document.getElementById('excelFileAll').click()"> Import Semua Kelas</button>
-    <input type="file" id="excelFileAll" style="display:none" accept=".xlsx,.xls" onchange="importExcelAll(event)">
-    <button class="btn-export-multi" onclick="openExportModal()">💾 Export Pilihan</button>
-  </div>
+  <input type="file" id="excelFileAll" style="display:none" accept=".xlsx,.xls" onchange="importExcelAll(event)">
 
   <div class="tabs no-print" id="tabs"></div>
   <div class="class-print-title print-only">Kelas: <span id="printClassName"></span></div>
@@ -566,7 +625,7 @@ function onMapelManualChange(){
   if(classData[currentClass])classData[currentClass].mapelId=document.getElementById('mapel').value;
   autoSave();recalcAllRows();
 }
-function recalcAllRows(){document.querySelectorAll('#class-content tbody tr').forEach(r=>{const i=r.querySelector('.uh');if(i)calculateRow(i);});}
+function recalcAllRows(){document.querySelectorAll('#class-content tbody tr').forEach(r=>{const i=r.querySelector('input');if(i)calculateRow(i);});}
 function syncPrintInfo(){
   document.getElementById('printSemester').innerText=document.getElementById('semester').value.trim()||'(belum diisi)';
   document.getElementById('printTahun').innerText=document.getElementById('tahun').value.trim()||'(belum diisi)';
@@ -692,7 +751,8 @@ function buildPrintDocument(indices,orientation,paper,showEmpty){
         const valUH=nu?su/nu:0;
         const valT=nt?st/nt:0;
         const valS=s.semester!==''?parseFloat(s.semester):0;
-        const nRaw=(valUH+valT+valS)/3;
+        const countComps=(nu>0?1:0)+(nt>0?1:0)+(s.semester!==''?1:0);
+        const nRaw=countComps>0?(valUH+valT+valS)/countComps:0;
         na=roundInt(nRaw);
         if(na<kktp){kt='✗ Belum Tuntas';kc='ket-belum';}
         else{kt='✓ Tuntas';kc='ket-tuntas';}
@@ -845,20 +905,17 @@ function saveCurrentClassData(){
   if(!classData[currentClass])return;
   const content=document.getElementById('class-content');
   if(!content||!content.querySelector('table'))return;
-  const ni=content.querySelector('.class-name-input');
-  if(ni){
-    classData[currentClass].name=ni.value;
-    const tabs=document.querySelectorAll('.tab-btn');
-    if(tabs[currentClass])tabs[currentClass].innerText=ni.value;
-  }
   const ts=classData[currentClass].totalSiswa||DEFAULT_JUMLAH_SISWA;
   classData[currentClass].students=[];
   content.querySelectorAll('tbody tr').forEach(row=>{
-    const inp=row.querySelectorAll('input');
-    const name=inp[0].value,uh=[],tugas=[];
-    for(let i=0;i<uhList.length;i++)uh.push(inp[1+i].value);
-    for(let i=0;i<tugasList.length;i++)tugas.push(inp[1+uhList.length+i].value);
-    const semester=inp[1+uhList.length+tugasList.length].value;
+    const nameInp=row.querySelector('.nama-input');
+    const name=nameInp?nameInp.value:'';
+    const uh=[];
+    row.querySelectorAll('.uh').forEach(i=>uh.push(i.value));
+    const tugas=[];
+    row.querySelectorAll('.tugas').forEach(i=>tugas.push(i.value));
+    const semInp=row.querySelector('.semester');
+    const semester=semInp?semInp.value:'';
     classData[currentClass].students.push({name,uh,tugas,semester});
   });
   if(classData[currentClass].students.length>ts)classData[currentClass].students.length=ts;
@@ -885,23 +942,24 @@ function renderClass(){
         <button class="btn-export" onclick="exportExcel()">💾 Export</button>
       </div>
     </div>
+    <div class="table-container">
     <table><thead><tr>
-      <th rowspan="2">No</th><th rowspan="2">Nama Siswa</th>
+      <th rowspan="2" class="col-sticky-1">No</th><th rowspan="2" class="col-sticky-2">Nama Siswa</th>
       <th colspan="${uhList.length}">Ulangan Harian</th><th rowspan="2">Rata UH</th>
       <th colspan="${tugasList.length}">Tugas</th><th rowspan="2">Rata Tugas</th>
       <th rowspan="2">Semester</th><th rowspan="2">Nilai Akhir</th><th rowspan="2">Keterangan</th>
     </tr><tr>${uhH}${tH}</tr></thead><tbody>`;
   for(let i=0;i<ts;i++){
     const s=data.students[i];
-    const uhC=s.uh.map(v=>`<td><input type="number" class="uh" min="0" max="100" value="${esc(v)}" oninput="calculateRow(this)"></td>`).join('');
-    const tC=s.tugas.map(v=>`<td><input type="number" class="tugas" min="0" max="100" value="${esc(v)}" oninput="calculateRow(this)"></td>`).join('');
-    html+=`<tr><td>${i+1}</td>
-      <td><input type="text" class="nama-input" value="${esc(s.name)}" oninput="autoSave()"></td>
+    const uhC=s.uh.map(v=>`<td><input type="number" inputmode="decimal" class="uh" min="0" max="100" value="${esc(v)}" oninput="calculateRow(this)"></td>`).join('');
+    const tC=s.tugas.map(v=>`<td><input type="number" inputmode="decimal" class="tugas" min="0" max="100" value="${esc(v)}" oninput="calculateRow(this)"></td>`).join('');
+    html+=`<tr><td class="col-sticky-1">${i+1}</td>
+      <td class="col-sticky-2"><input type="text" class="nama-input" value="${esc(s.name)}" oninput="autoSave()"></td>
       ${uhC}<td class="auto-calc avg-uh">0</td>${tC}<td class="auto-calc avg-tugas">0</td>
-      <td><input type="number" class="semester" min="0" max="100" value="${esc(s.semester)}" oninput="calculateRow(this)"></td>
+      <td><input type="number" inputmode="decimal" class="semester" min="0" max="100" value="${esc(s.semester)}" oninput="calculateRow(this)"></td>
       <td class="final-grade">0</td><td class="ket-cell ket-default">-</td></tr>`;
   }
-  html+='</tbody></table>';
+  html+='</tbody></table></div>';
   document.getElementById('class-content').innerHTML=html;
   recalcAllRows();syncPrintInfo();
 }
@@ -911,22 +969,32 @@ function updateTabName(name){
   document.getElementById('printClassName').innerText=name;autoSave();
 }
 function calculateRow(el){
-  const row=el.closest('tr');let su=0,nu=0,st=0,nt=0;
+  const row=el.closest('tr');if(!row)return;
+  let su=0,nu=0,st=0,nt=0;
   row.querySelectorAll('.uh').forEach(i=>{if(i.value!==''){su+=parseFloat(i.value);nu++;}});
   row.querySelectorAll('.tugas').forEach(i=>{if(i.value!==''){st+=parseFloat(i.value);nt++;}});
   const au=nu?su/nu:0,at=nt?st/nt:0;
-  const se=row.querySelector('.semester'),sem=se.value!==''?parseFloat(se.value):0;
-  const na=(au+at+sem)/3;
-  row.querySelector('.avg-uh').innerText=nu?roundInt(au):'0';
-  row.querySelector('.avg-tugas').innerText=nt?roundInt(at):'0';
-  row.querySelector('.final-grade').innerText=roundInt(na);
-  const kktp=parseFloat(document.getElementById('kktp').value),cell=row.querySelector('.ket-cell');
-  const ada=nu>0||nt>0||se.value!=='';
-  if(!ada){cell.innerText='-';cell.className='ket-cell ket-default';}
-  else{
-    const finalNa=roundInt(na);
-    if(finalNa<kktp){cell.innerText='✗ Belum Tuntas';cell.className='ket-cell ket-belum';}
-    else{cell.innerText='✓ Tuntas';cell.className='ket-cell ket-tuntas';}
+  const se=row.querySelector('.semester');
+  const semVal=(se&&se.value!=='')?parseFloat(se.value):0;
+  const hasSem=(se&&se.value!=='');
+
+  const countComps=(nu>0?1:0)+(nt>0?1:0)+(hasSem?1:0);
+  const na=countComps>0?(au+at+semVal)/countComps:0;
+
+  const avgUhEl=row.querySelector('.avg-uh');if(avgUhEl)avgUhEl.innerText=nu?roundInt(au):'-';
+  const avgTgEl=row.querySelector('.avg-tugas');if(avgTgEl)avgTgEl.innerText=nt?roundInt(at):'-';
+  const finalEl=row.querySelector('.final-grade');if(finalEl)finalEl.innerText=countComps>0?roundInt(na):'-';
+
+  const kktp=parseFloat(document.getElementById('kktp').value)||DEFAULT_KKTP;
+  const cell=row.querySelector('.ket-cell');
+  if(cell){
+    if(countComps===0){
+      cell.innerText='-';cell.className='ket-cell ket-default';
+    }else{
+      const finalNa=roundInt(na);
+      if(finalNa<kktp){cell.innerText='✗ Belum Tuntas';cell.className='ket-cell ket-belum';}
+      else{cell.innerText='✓ Tuntas';cell.className='ket-cell ket-tuntas';}
+    }
   }
   autoSave();
 }
@@ -1216,48 +1284,160 @@ function saveSiswaPerClass(){
 }
 
 function checkXLSX(){if(typeof XLSX==='undefined'){alert('⚠️ Library Excel belum termuat.');return false;}return true;}
-function extractNamesFromSheet(rows){
-  if(!rows.length)return[];
-  let start=0;
-  const head=rows[0].map(c=>String(c).trim().toLowerCase());
-  if(head.some(c=>['no','no.','nama','nama siswa','name'].includes(c)))start=1;
-  const names=[];
-  for(let i=start;i<rows.length;i++){
-    const r=rows[i];let name='';
-    if(r.length>1&&String(r[1]).trim()!=='')name=String(r[1]).trim();
-    else if(r.length){const a=String(r[0]).trim();if(a&&isNaN(a))name=a;}
-    if(name)names.push(name);
+function extractDataFromSheet(rows){
+  if(!rows||!rows.length)return[];
+  let headerRowIdx=-1;
+  let nameCol=1;
+  for(let r=0;r<Math.min(10,rows.length);r++){
+    const rowStr=rows[r].map(c=>String(c).trim().toLowerCase());
+    if(rowStr.some(c=>['no','no.','nama','nama siswa','name'].includes(c))){
+      headerRowIdx=r;break;
+    }
   }
-  return names;
+
+  let uhCols=[],tugasCols=[],semesterCol=-1;
+  if(headerRowIdx!==-1){
+    const head=rows[headerRowIdx].map(c=>String(c).trim().toLowerCase());
+    const foundNameIdx=head.findIndex(c=>['nama','nama siswa','name','nama_siswa'].includes(c));
+    if(foundNameIdx!==-1)nameCol=foundNameIdx;
+
+    uhList.forEach((uhName,k)=>{
+      const idx=head.findIndex(c=>c===uhName.toLowerCase()||c===`uh ${k+1}`||c===`uh${k+1}`);
+      if(idx!==-1)uhCols[k]=idx;
+      else uhCols[k]=nameCol+1+k;
+    });
+
+    tugasList.forEach((tugasName,k)=>{
+      const idx=head.findIndex(c=>c===tugasName.toLowerCase()||c===`tugas ${k+1}`||c===`tugas${k+1}`);
+      if(idx!==-1)tugasCols[k]=idx;
+      else tugasCols[k]=nameCol+1+uhList.length+k;
+    });
+
+    const semIdx=head.findIndex(c=>['semester','nilai semester','pas','sas'].includes(c));
+    if(semIdx!==-1)semesterCol=semIdx;
+    else semesterCol=nameCol+1+uhList.length+tugasList.length;
+  }else{
+    uhList.forEach((_,k)=>{uhCols[k]=nameCol+1+k;});
+    tugasList.forEach((_,k)=>{tugasCols[k]=nameCol+1+uhList.length+k;});
+    semesterCol=nameCol+1+uhList.length+tugasList.length;
+  }
+
+  const startRow=headerRowIdx!==-1?headerRowIdx+1:0;
+  const records=[];
+  for(let r=startRow;r<rows.length;r++){
+    const row=rows[r];
+    if(!row||!row.length)continue;
+    let name='';
+    if(row[nameCol]!==undefined&&String(row[nameCol]).trim()!==''){
+      name=String(row[nameCol]).trim();
+    }else if(nameCol===1&&row[0]!==undefined&&isNaN(String(row[0]).trim())&&String(row[0]).trim()!==''){
+      name=String(row[0]).trim();
+    }
+
+    const uh=[];
+    uhList.forEach((_,k)=>{
+      const cIdx=uhCols[k];
+      const val=(cIdx!==undefined&&row[cIdx]!==undefined)?String(row[cIdx]).trim():'';
+      uh.push(!isNaN(val)&&val!==''?String(Math.min(100,Math.max(0,parseFloat(val)))):'');
+    });
+
+    const tugas=[];
+    tugasList.forEach((_,k)=>{
+      const cIdx=tugasCols[k];
+      const val=(cIdx!==undefined&&row[cIdx]!==undefined)?String(row[cIdx]).trim():'';
+      tugas.push(!isNaN(val)&&val!==''?String(Math.min(100,Math.max(0,parseFloat(val)))):'');
+    });
+
+    let semester='';
+    if(semesterCol!==-1&&row[semesterCol]!==undefined){
+      const val=String(row[semesterCol]).trim();
+      if(!isNaN(val)&&val!=='')semester=String(Math.min(100,Math.max(0,parseFloat(val))));
+    }
+
+    if(name||uh.some(v=>v!=='')||tugas.some(v=>v!=='')||semester!==''){
+      records.push({name,uh,tugas,semester});
+    }
+  }
+  return records;
 }
-function applyNamesToClass(idx,names){
-  const ts=classData[idx].totalSiswa||DEFAULT_JUMLAH_SISWA,limit=Math.min(names.length,ts);
+
+function extractNamesFromSheet(rows){
+  return extractDataFromSheet(rows).map(r=>r.name).filter(n=>n);
+}
+
+function applyDataToClass(idx,records){
+  const ts=classData[idx].totalSiswa||DEFAULT_JUMLAH_SISWA;
+  const limit=Math.min(records.length,ts);
   for(let i=0;i<limit;i++){
+    const rec=records[i];
     if(!classData[idx].students[i])classData[idx].students[i]=migrateStudent({name:`Siswa ${i+1}`});
-    classData[idx].students[i].name=names[i];
+    if(rec.name)classData[idx].students[i].name=rec.name;
+    if(Array.isArray(rec.uh)){
+      rec.uh.forEach((v,k)=>{
+        if(k<uhList.length&&v!==undefined&&v!==null&&String(v).trim()!==''){
+          classData[idx].students[i].uh[k]=String(v).trim();
+        }
+      });
+    }
+    if(Array.isArray(rec.tugas)){
+      rec.tugas.forEach((v,k)=>{
+        if(k<tugasList.length&&v!==undefined&&v!==null&&String(v).trim()!==''){
+          classData[idx].students[i].tugas[k]=String(v).trim();
+        }
+      });
+    }
+    if(rec.semester!==undefined&&rec.semester!==null&&String(rec.semester).trim()!==''){
+      classData[idx].students[i].semester=String(rec.semester).trim();
+    }
   }
   return limit;
 }
+
+function applyNamesToClass(idx,names){
+  const recs=names.map(name=>({name,uh:[],tugas:[],semester:''}));
+  return applyDataToClass(idx,recs);
+}
+
 function downloadTemplate(){
   if(!checkXLSX())return;
-  const ts=classData[currentClass].totalSiswa||DEFAULT_JUMLAH_SISWA,aoa=[['No','Nama Siswa']];
-  for(let i=1;i<=ts;i++)aoa.push([i,'']);
-  const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=[{wch:5},{wch:35}];
-  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Daftar Siswa');
-  XLSX.writeFile(wb,'template-siswa-'+classData[currentClass].name.replace(/[^a-z0-9]/gi,'_')+'.xlsx');
+  const ts=classData[currentClass].totalSiswa||DEFAULT_JUMLAH_SISWA;
+  const header=['No','Nama Siswa',...uhList,...tugasList,'Semester'];
+  const aoa=[header];
+  for(let i=1;i<=ts;i++){
+    const row=[i,''];
+    for(let k=0;k<uhList.length+tugasList.length+1;k++)row.push('');
+    aoa.push(row);
+  }
+  const ws=XLSX.utils.aoa_to_sheet(aoa);
+  const cols=[{wch:5},{wch:30}];
+  for(let k=0;k<uhList.length+tugasList.length+1;k++)cols.push({wch:10});
+  ws['!cols']=cols;
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Daftar Nilai');
+  XLSX.writeFile(wb,'template-nilai-'+classData[currentClass].name.replace(/[^a-z0-9]/gi,'_')+'.xlsx');
 }
+
 function downloadTemplateAll(){
   if(!checkXLSX())return;if(!classData.length){alert('Belum ada kelas.');return;}
   flushSave();const wb=XLSX.utils.book_new();
+  const header=['No','Nama Siswa',...uhList,...tugasList,'Semester'];
+  const cols=[{wch:5},{wch:30}];
+  for(let k=0;k<uhList.length+tugasList.length+1;k++)cols.push({wch:10});
+
   classData.forEach(c=>{
-    const ts=c.totalSiswa||DEFAULT_JUMLAH_SISWA,aoa=[['No','Nama Siswa']];
-    for(let j=1;j<=ts;j++)aoa.push([j,'']);
-    const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=[{wch:5},{wch:35}];
+    const ts=c.totalSiswa||DEFAULT_JUMLAH_SISWA;
+    const aoa=[header];
+    for(let j=1;j<=ts;j++){
+      const row=[j,''];
+      for(let k=0;k<uhList.length+tugasList.length+1;k++)row.push('');
+      aoa.push(row);
+    }
+    const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=cols;
     XLSX.utils.book_append_sheet(wb,ws,c.name.substring(0,31));
   });
   XLSX.writeFile(wb,'template-semua-kelas.xlsx');
   alert(`✓ Template ${classData.length} kelas terunduh.`);
 }
+
 function importExcel(event){
   if(!checkXLSX()){event.target.value='';return;}
   const file=event.target.files[0];if(!file)return;
@@ -1266,17 +1446,18 @@ function importExcel(event){
     try{
       const wbk=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
       const rows=XLSX.utils.sheet_to_json(wbk.Sheets[wbk.SheetNames[0]],{header:1,defval:''});
-      const names=extractNamesFromSheet(rows);
-      if(!names.length){alert('Tidak ada nama siswa terdeteksi.');event.target.value='';return;}
+      const records=extractDataFromSheet(rows);
+      if(!records.length){alert('Tidak ada data siswa / nilai terdeteksi.');event.target.value='';return;}
       const ts=classData[currentClass].totalSiswa||DEFAULT_JUMLAH_SISWA;
-      if(!confirm(`Kelas: ${classData[currentClass].name} (maks ${ts} siswa)\nDitemukan ${names.length} nama.\nNilai lama DIPERTAHANKAN. Lanjutkan?`)){event.target.value='';return;}
-      flushSave();const n=applyNamesToClass(currentClass,names);
-      saveData();renderClass();alert(`✓ Import ${n} nama.`);
+      if(!confirm(`Kelas: ${classData[currentClass].name} (maks ${ts} siswa)\nDitemukan ${records.length} data siswa/nilai.\nLanjutkan import?`)){event.target.value='';return;}
+      flushSave();const n=applyDataToClass(currentClass,records);
+      saveData();renderClass();alert(`✓ Import ${n} data siswa & nilai berhasil.`);
     }catch(err){alert('Gagal membaca file: '+err.message);}
     event.target.value='';
   };
   reader.readAsArrayBuffer(file);
 }
+
 function importExcelAll(event){
   if(!checkXLSX()){event.target.value='';return;}
   if(!classData.length){alert('Belum ada kelas.');event.target.value='';return;}
@@ -1289,6 +1470,7 @@ function importExcelAll(event){
   };
   reader.readAsArrayBuffer(file);
 }
+
 function showMappingModal(){
   const list=document.getElementById('mappingList');list.innerHTML='';
   pendingWorkbook.SheetNames.forEach((sheetName,idx)=>{
@@ -1304,18 +1486,20 @@ function showMappingModal(){
   });
   document.getElementById('mappingModal').classList.add('active');
 }
+
 function closeMappingModal(){document.getElementById('mappingModal').classList.remove('active');pendingWorkbook=null;}
+
 function confirmMapping(){
   if(!pendingWorkbook)return;flushSave();
   let total=0;const used=new Set();
   document.querySelectorAll('#mappingList select').forEach(sel=>{
     const si=parseInt(sel.dataset.sheetIdx),ci=parseInt(sel.value),sn=pendingWorkbook.SheetNames[si];
     const rows=XLSX.utils.sheet_to_json(pendingWorkbook.Sheets[sn],{header:1,defval:''});
-    const names=extractNamesFromSheet(rows);
-    if(names.length){total+=applyNamesToClass(ci,names);used.add(ci);}
+    const records=extractDataFromSheet(rows);
+    if(records.length){total+=applyDataToClass(ci,records);used.add(ci);}
   });
   saveData();buildTabs();renderClass();closeMappingModal();
-  alert(`✓ Import berhasil: ${total} nama di ${used.size} kelas.`);
+  alert(`✓ Import berhasil: ${total} data di ${used.size} kelas.`);
 }
 function buildExportCols(){
   const cols=[{wch:4},{wch:30}];
@@ -1343,7 +1527,8 @@ function buildClassExportAoa(c,kktp,guru){
     const ada=nu>0||nt>0||s.semester!=='';
     let na='',ket='';
     if(ada){
-      const nRaw=((nu?su/nu:0)+(nt?st/nt:0)+(s.semester!==''?parseFloat(s.semester):0))/3;
+      const countComps=(nu>0?1:0)+(nt>0?1:0)+(s.semester!==''?1:0);
+      const nRaw=countComps>0?((nu?su/nu:0)+(nt?st/nt:0)+(s.semester!==''?parseFloat(s.semester):0))/countComps:0;
       na=roundInt(nRaw);
       ket=na<kktp?' Belum Tuntas':'✓ Tuntas';
     }
@@ -1425,7 +1610,8 @@ function doExportSelected(){
         const ada=nu>0||nt>0||s.semester!=='';
         let na='',ket='';
         if(ada){
-          const nRaw=((nu?su/nu:0)+(nt?st/nt:0)+(s.semester!==''?parseFloat(s.semester):0))/3;
+          const countComps=(nu>0?1:0)+(nt>0?1:0)+(s.semester!==''?1:0);
+          const nRaw=countComps>0?((nu?su/nu:0)+(nt?st/nt:0)+(s.semester!==''?parseFloat(s.semester):0))/countComps:0;
           na=roundInt(nRaw);
           ket=na<kktp?'✗ Belum Tuntas':'✓ Tuntas';
         }
@@ -1583,6 +1769,23 @@ loadData();
 buildTabs();
 renderClass();
 updateBakedInfo();
+function toggleUnifiedMenu(e){
+  if(e)e.stopPropagation();
+  const dropdown=document.getElementById('unifiedMenuDropdown');
+  if(dropdown)dropdown.classList.toggle('show');
+}
+function closeUnifiedMenu(){
+  const dropdown=document.getElementById('unifiedMenuDropdown');
+  if(dropdown)dropdown.classList.remove('show');
+}
+document.addEventListener('click',function(e){
+  const dd=document.getElementById('unifiedMenuDropdown');
+  if(dd&&dd.classList.contains('show')){
+    if(!e.target.closest('.unified-menu-dropdown')){
+      closeUnifiedMenu();
+    }
+  }
+});
 window.addEventListener('beforeunload',()=>{try{saveCurrentClassData();saveData();}catch(e){}});
 </script>
 </body>
