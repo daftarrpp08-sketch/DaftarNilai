@@ -1,0 +1,1589 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daftar Nilai - SMKN 1 GONDANG</title>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f5f5f5;padding:15px;font-size:13px}
+.container{max-width:1300px;margin:0 auto;background:#fff;padding:20px;border:1px solid #ddd}
+.header{text-align:center;border-bottom:2px solid #333;padding-bottom:12px;margin-bottom:15px}
+.header h1{font-size:18px;letter-spacing:1px}
+.header p{font-size:13px;margin-top:4px}
+.tahun-row{display:flex;justify-content:center;align-items:center;gap:6px;margin-top:6px;font-size:13px}
+.tahun-row input{font-size:13px;font-weight:bold;border:none;border-bottom:1px dotted #888;background:transparent;padding:3px 5px;outline:none;text-align:center;width:130px}
+.tahun-row input:focus{background:#fffde7}
+.info-row{display:grid;grid-template-columns:1.5fr .6fr 1.2fr;gap:10px;margin-bottom:10px;font-size:12px}
+.info-row>div{display:flex;align-items:center;gap:6px}
+.info-row label{font-weight:bold;white-space:nowrap}
+.info-row input,.info-row select{border:none;border-bottom:1px dotted #999;outline:none;padding:3px 5px;width:100%;font-size:12px;background:transparent;font-family:inherit}
+.mapel-wrapper{display:flex;align-items:center;gap:4px;flex:1}
+.mapel-wrapper select{flex:1}
+.btn-manage-mapel{padding:3px 8px;font-size:11px;background:#3498db;color:#fff;border:none;border-radius:3px;cursor:pointer;white-space:nowrap}
+.structure-panel,.bulk-excel{display:flex;gap:8px;margin-bottom:12px;padding:10px 12px;border-radius:4px;align-items:center;flex-wrap:wrap;font-size:12px}
+.structure-panel{background:#fff8e1;border:1px dashed #f39c12}
+.structure-panel strong{color:#7d6608}
+.bulk-excel{background:#eef6ff;border:1px dashed #3498db}
+.structure-panel button,.bulk-excel button{padding:6px 12px;font-size:11px;border-radius:3px;border:none;color:#fff;cursor:pointer}
+.btn-manage-siswa{background:#2874a6}.btn-manage-uh{background:#8e44ad}.btn-manage-tugas{background:#d35400}
+.btn-export-multi{background:#e67e22}.btn-print-multi{background:#34495e}
+.tabs{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:12px;border-bottom:1px solid #ccc;padding-bottom:8px;align-items:center}
+.tab-btn{padding:6px 12px;background:#f0f0f0;border:1px solid #ccc;cursor:pointer;font-size:11px;border-radius:3px 3px 0 0}
+.tab-btn.active{background:#333;color:#fff;border-color:#333}
+.btn-manage-class{padding:5px 10px;font-size:11px;background:#16a085;color:#fff;border:none;border-radius:3px;cursor:pointer;margin-left:auto}
+.class-name-edit{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:12px;flex-wrap:wrap}
+.class-name-edit input{border:1px solid #ccc;padding:4px 8px;font-size:12px;width:220px}
+.class-siswa-badge{font-size:11px;background:#d6eaf8;color:#1a5276;padding:4px 10px;border-radius:3px;font-weight:bold}
+.class-print-title{font-weight:bold;font-size:12px;margin-bottom:8px}
+.print-only{display:none}
+.excel-btns{display:flex;gap:5px;flex-wrap:wrap}
+.excel-btns button{padding:5px 10px;font-size:11px;border-radius:3px;border:none;color:#fff;cursor:pointer}
+.btn-template{background:#3498db}.btn-import{background:#27ae60}.btn-export{background:#e67e22}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th,td{border:1px solid #999;padding:5px;text-align:center}
+th{background:#f8f8f8;font-weight:bold;font-size:11px}
+td input{width:100%;border:none;text-align:center;background:transparent;font-size:11px;outline:none;padding:2px}
+td input:focus{background:#ffffcc}
+.nama-input{text-align:left!important}
+.auto-calc{background:#f0f8ff;font-weight:bold}.final-grade{background:#e8f5e9;font-weight:bold}
+.ket-cell{font-size:10px;font-weight:bold;padding:3px;white-space:nowrap}
+.ket-tuntas{background:#d4edda!important;color:#155724;border-left:3px solid #28a745}
+.ket-belum{background:#f8d7da!important;color:#721c24;border-left:3px solid #dc3545}
+.ket-default{background:#f5f5f5!important;color:#888}
+.btn-container{margin-top:15px;display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center}
+.btn-group{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+button{padding:8px 14px;color:#fff;border:none;cursor:pointer;font-size:12px;border-radius:3px}
+button:hover{opacity:.88}
+.btn-print{background:#333}.btn-backup{background:#2980b9}.btn-restore{background:#7f8c8d}.btn-reset{background:#c0392b}
+.save-status{font-size:11px;color:#27ae60;font-style:italic}
+.permanent-panel{margin-top:18px;padding:14px;background:#f0f7f4;border:1px solid #bfe0d2;border-radius:5px;display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+.permanent-panel h3{font-size:13px;margin-bottom:4px;color:#145a32}
+.permanent-panel p{font-size:11px;color:#555;line-height:1.7;max-width:640px}
+.permanent-actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn-persist{background:#148f4f}.btn-revert{background:#7f8c8d}
+.source-badge{font-size:10px;color:#145a32;margin-top:6px;font-style:italic}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;justify-content:center;align-items:center}
+.modal-overlay.active{display:flex}
+.modal{background:#fff;padding:25px;border-radius:5px;max-width:640px;width:92%;box-shadow:0 4px 20px rgba(0,0,0,.2);max-height:88vh;overflow-y:auto}
+.modal h3{margin-bottom:12px;color:#145a32}
+.modal p{margin-bottom:12px;font-size:13px;line-height:1.7}
+.modal-field{margin:12px 0}
+.modal-field label{display:block;font-size:12px;font-weight:bold;margin-bottom:5px}
+.modal-field input,.modal-field select{width:100%;padding:7px;border:1px solid #ccc;font-size:13px}
+.modal-hint{font-size:11px;color:#777;margin-top:6px;line-height:1.7}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:15px}
+.btn-cancel{background:#95a5a6}
+.item-list{margin:15px 0;border:1px solid #eee;border-radius:4px}
+.item-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid #eee;font-size:13px;flex-wrap:wrap}
+.item-row:last-child{border-bottom:none}
+.item-row .item-name{flex:1;min-width:120px}
+.item-row input{width:100%;padding:5px 8px;border:1px solid #3498db;border-radius:3px;font-size:13px}
+.item-row .item-mapel{font-size:11px;color:#16a085;background:#e8f6f3;padding:3px 8px;border-radius:3px;white-space:nowrap}
+.item-actions{display:flex;gap:4px}
+.item-actions button{padding:4px 8px;font-size:11px;border-radius:3px;border:none;color:#fff;cursor:pointer}
+.btn-edit-item{background:#f39c12}.btn-save-item{background:#27ae60}.btn-cancel-edit{background:#95a5a6}.btn-delete-item{background:#c0392b}
+.item-empty{padding:20px;text-align:center;color:#888;font-size:12px}
+.add-item-form{display:flex;gap:6px;margin-top:10px;padding-top:10px;border-top:1px dashed #ccc}
+.add-item-form input{flex:1;padding:7px;border:1px solid #ccc;font-size:13px}
+.add-item-form button{background:#27ae60}
+.item-count-info{background:#fef5e7;padding:8px 12px;border-radius:4px;font-size:12px;color:#7d6608;margin-bottom:10px}
+.edit-class-row{display:flex;gap:6px;align-items:center;flex:1;flex-wrap:wrap}
+.edit-class-row input{flex:1;min-width:120px}
+.edit-class-row select{flex:1;min-width:120px;padding:5px 8px;border:1px solid #16a085;border-radius:3px;font-size:13px}
+.selection-list{max-height:42vh;overflow-y:auto;border:1px solid #eee;border-radius:4px;margin:12px 0}
+.selection-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #eee;font-size:13px;cursor:pointer}
+.selection-row:last-child{border-bottom:none}
+.selection-row:hover{background:#f8f9fa}
+.selection-row.selected{background:#fef5e7}
+.selection-row input[type=checkbox]{width:18px;height:18px;cursor:pointer;accent-color:#e67e22}
+.selection-row .class-info{flex:1}
+.selection-row .class-name-label{font-weight:500}
+.selection-row .class-meta{font-size:10px;color:#888;margin-top:2px}
+.selection-row .class-mapel{font-size:11px;color:#16a085;background:#e8f6f3;padding:3px 8px;border-radius:3px}
+.selection-row .class-siswa{font-size:11px;color:#1a5276;background:#d6eaf8;padding:3px 8px;border-radius:3px}
+.selection-toolbar{display:flex;gap:6px;margin-bottom:8px;align-items:center;flex-wrap:wrap}
+.selection-toolbar button{padding:5px 10px;font-size:11px;background:#95a5a6}
+.selection-toolbar .counter{margin-left:auto;font-size:12px;font-weight:bold}
+#printCounter{color:#333}.export-counter{color:#e67e22}
+.selection-summary{padding:10px 14px;border-radius:4px;font-size:12px;margin:10px 0;line-height:1.8}
+#printSummary{background:#eaf2f8;color:#1a5276}
+#exportSummary{background:#fef5e7;color:#7d6608}
+.selection-summary strong{font-weight:bold}
+.export-mode,.print-options{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}
+.export-mode label,.print-option-box{display:flex;gap:6px;align-items:flex-start;font-size:12px;padding:9px;border:1px solid #e3e3e3;border-radius:4px;flex:1;cursor:pointer;line-height:1.6}
+.export-mode input{margin-top:3px}
+.print-option-box{display:block;flex:1;min-width:150px;cursor:default}
+.print-option-box label{display:block;font-size:11px;font-weight:bold;margin-bottom:5px;color:#555}
+.print-option-box select{width:100%;padding:6px;border:1px solid #ccc;border-radius:3px;font-size:12px}
+.print-toggle{display:flex;gap:8px;align-items:center;font-size:12px;margin:10px 0;cursor:pointer}
+.siswa-per-class-list{max-height:45vh;overflow-y:auto;border:1px solid #eee;border-radius:4px;margin:12px 0}
+.siswa-class-row{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid #eee;font-size:13px;flex-wrap:wrap}
+.siswa-class-row:last-child{border-bottom:none}
+.siswa-class-row .class-label{flex:1;font-weight:500;min-width:140px}
+.siswa-class-row .current-info{display:block;font-size:10px;color:#888;font-weight:normal;margin-top:2px}
+.siswa-class-row input[type=number]{width:80px;padding:6px 8px;border:1px solid #2874a6;border-radius:3px;font-size:13px;text-align:center}
+.preset-btns{display:flex;gap:3px;flex-wrap:wrap}
+.preset-btns button{padding:3px 8px;font-size:10px;background:#d6eaf8;color:#1a5276;border:1px solid #aed6f1;border-radius:3px}
+.siswa-class-row.active-class{background:#eaf2f8}
+.siswa-toolbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;padding:8px;background:#f8f9fa;border-radius:4px;align-items:center}
+.siswa-toolbar label{font-size:12px;font-weight:bold;color:#555}
+.siswa-toolbar input{width:70px;padding:5px;border:1px solid #ccc;border-radius:3px;text-align:center}
+.siswa-toolbar button{padding:5px 10px;font-size:11px;background:#2874a6}
+.persist-options label{display:flex;gap:8px;align-items:flex-start;font-size:12px;padding:9px;border:1px solid #e3e3e3;border-radius:4px;margin-bottom:6px;cursor:pointer;line-height:1.6}
+.persist-options input{margin-top:3px}
+.persist-summary{background:#f8f9fa;border:1px dashed #ccc;padding:10px 12px;font-size:12px;border-radius:4px;margin:12px 0;line-height:1.9}
+.mapping-row{display:flex;gap:10px;align-items:center;margin-bottom:8px;font-size:12px}
+.mapping-row select{flex:1;padding:5px}
+.mapping-row .sheet-name{background:#f0f0f0;padding:5px 8px;border-radius:3px;min-width:120px}
+@media print{
+body{background:#fff;padding:0}
+.container{border:none;padding:0;max-width:100%}
+.no-print,.modal-overlay{display:none!important}
+.print-only{display:inline}.class-print-title{display:block}
+.info-row input,.info-row select,td input{border:none}
+.auto-calc,.final-grade{background:transparent!important}
+th{background:#eee!important;-webkit-print-color-adjust:exact}
+.ket-tuntas,.ket-belum{-webkit-print-color-adjust:exact;print-color-adjust:exact;color-adjust:exact}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>DAFTAR NILAI</h1>
+    <input type="text" id="semester" class="no-print" value="Semester Gasal" oninput="onSemesterInput()">
+    <strong class="print-only" id="printSemester">Semester Gasal</strong>
+    <p>SMKN 1 GONDANG</p>
+    <div class="tahun-row">
+      <span>Tahun Pelajaran:</span>
+      <input type="text" id="tahun" class="no-print" value="2026/2027" oninput="onTahunInput()">
+      <strong class="print-only" id="printTahun">2026/2027</strong>
+    </div>
+  </div>
+
+  <div class="info-row">
+    <div>
+      <label>Mata Pelajaran:</label>
+      <div class="mapel-wrapper">
+        <select id="mapel" onchange="onMapelManualChange()"></select>
+        <button class="btn-manage-mapel no-print" onclick="openMapelManager()">️ Kelola</button>
+      </div>
+    </div>
+    <div>
+      <label>KKTP:</label>
+      <select id="kktp" onchange="onKktpManualChange()">
+        <option value="70">70</option><option value="71">71</option><option value="72">72</option>
+        <option value="73">73</option><option value="74">74</option><option value="75" selected>75</option>
+        <option value="76">76</option><option value="77">77</option><option value="78">78</option>
+        <option value="79">79</option><option value="80">80</option>
+      </select>
+    </div>
+    <div><label>Guru Pengampu:</label><input type="text" id="guru" value="[Nama Anda, S.Pd.]" oninput="autoSave()"></div>
+  </div>
+
+  <div class="structure-panel no-print">
+    <strong>📐 Struktur Penilaian:</strong>
+    <button class="btn-manage-siswa" id="btnManageSiswa" onclick="openSiswaManager()">👥 Kelola Jumlah Siswa</button>
+    <button class="btn-manage-uh" id="btnManageUh" onclick="openStrukturManager('uh')">📝 Kelola Ulangan Harian</button>
+    <button class="btn-manage-tugas" id="btnManageTugas" onclick="openStrukturManager('tugas')"> Kelola Tugas</button>
+  </div>
+
+  <div class="bulk-excel no-print">
+    <strong>📊 Sinkron & Export:</strong>
+    <button class="btn-template" onclick="downloadTemplateAll()">📋 Download Template</button>
+    <button class="btn-import" onclick="document.getElementById('excelFileAll').click()"> Import Semua Kelas</button>
+    <input type="file" id="excelFileAll" style="display:none" accept=".xlsx,.xls" onchange="importExcelAll(event)">
+    <button class="btn-export-multi" onclick="openExportModal()">💾 Export Pilihan</button>
+  </div>
+
+  <div class="tabs no-print" id="tabs"></div>
+  <div class="class-print-title print-only">Kelas: <span id="printClassName"></span></div>
+  <div id="class-content"></div>
+
+  <div class="btn-container no-print">
+    <div class="btn-group">
+      <button class="btn-print" onclick="printCurrentClass()">🖨️ Cetak Kelas Ini</button>
+      <button class="btn-print-multi" onclick="openPrintModal()">🖨️ Cetak Pilihan Kelas</button>
+      <button class="btn-print" onclick="printAllClasses()">🖨️ Cetak Semua Kelas</button>
+    </div>
+    <div class="btn-group">
+      <button class="btn-backup" onclick="backupData()">💾 Backup</button>
+      <button class="btn-restore" onclick="document.getElementById('restoreFile').click()">📂 Restore</button>
+      <input type="file" id="restoreFile" style="display:none" accept=".json" onchange="restoreData(event)">
+      <button class="btn-reset" onclick="showResetModal()">🗑️ Reset Data</button>
+      <span class="save-status" id="saveStatus">✓ Tersimpan</span>
+    </div>
+  </div>
+
+  <div class="permanent-panel no-print">
+    <div>
+      <h3>💾 Simpan Permanen ke HTML</h3>
+      <p>Semua perubahan dilekatkan ke dalam <strong>file HTML baru</strong>. File hasil unduhan inilah yang dibagikan.</p>
+      <div class="source-badge" id="bakedInfo"></div>
+    </div>
+    <div class="permanent-actions">
+      <button class="btn-persist" onclick="openPersistModal()">📦 Simpan &amp; Unduh HTML</button>
+      <button class="btn-revert" id="btnRevert" style="display:none" onclick="revertToBaked()">↩️ Kembali ke Data Asli File</button>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="excelFile" style="display:none" accept=".xlsx,.xls,.csv" onchange="importExcel(event)">
+
+<div class="modal-overlay" id="printModal"><div class="modal">
+  <h3>🖨️ Cetak Pilihan Kelas</h3>
+  <p>Pilih kelas yang ingin dicetak. Setiap kelas dicetak pada <strong>halaman terpisah</strong>.</p>
+  <div class="selection-toolbar">
+    <button onclick="toggleAllPrint(true)">✓ Pilih Semua</button>
+    <button onclick="toggleAllPrint(false)">✗ Batal Semua</button>
+    <span class="counter" id="printCounter">0 kelas dipilih</span>
+  </div>
+  <div class="selection-list" id="printClassList"></div>
+  <div class="print-options">
+    <div class="print-option-box">
+      <label>Orientasi Kertas</label>
+      <select id="printOrientation">
+        <option value="landscape" selected>Landscape (mendatar)</option>
+        <option value="portrait">Portrait (tegak)</option>
+      </select>
+    </div>
+    <div class="print-option-box">
+      <label>Ukuran Kertas</label>
+      <select id="printPaperSize">
+        <option value="A4" selected>A4</option>
+        <option value="F4">F4 / Folio</option>
+        <option value="A3">A3</option>
+        <option value="Letter">Letter</option>
+      </select>
+    </div>
+  </div>
+  <label class="print-toggle">
+    <input type="checkbox" id="printShowEmpty" checked>
+    Sertakan baris siswa yang belum bernama
+  </label>
+  <div class="selection-summary" id="printSummary"></div>
+  <p class="modal-hint">💡 Di jendela print, pilih printer atau <strong>"Save as PDF"</strong>. Pastikan opsi <strong>"Background graphics"</strong> aktif.</p>
+  <div class="modal-actions">
+    <button class="btn-cancel" onclick="closePrintModal()">Batal</button>
+    <button class="btn-print" onclick="doPrintSelected()">🖨️ Cetak Sekarang</button>
+  </div>
+</div></div>
+
+<div class="modal-overlay" id="exportModal"><div class="modal">
+  <h3 style="color:#e67e22">💾 Export Pilihan Kelas ke Excel</h3>
+  <p>Pilih kelas yang ingin di-export menjadi <strong>1 file Excel</strong>.</p>
+  <div class="selection-toolbar">
+    <button onclick="toggleAllExport(true)">✓ Pilih Semua</button>
+    <button onclick="toggleAllExport(false)"> Batal Semua</button>
+    <span class="counter export-counter" id="exportCounter">0 kelas dipilih</span>
+  </div>
+  <div class="selection-list" id="exportClassList"></div>
+  <div class="export-mode">
+    <label><input type="radio" name="exportMode" value="sheet" checked>
+      <span><strong>Pisah per Sheet</strong><br>Setiap kelas = 1 sheet terpisah.</span></label>
+    <label><input type="radio" name="exportMode" value="combined">
+      <span><strong>Gabung 1 Sheet</strong><br>Semua kelas dalam 1 sheet.</span></label>
+  </div>
+  <div class="selection-summary" id="exportSummary"></div>
+  <div class="modal-actions">
+    <button class="btn-cancel" onclick="closeExportModal()">Batal</button>
+    <button class="btn-export" onclick="doExportSelected()">💾 Export Sekarang</button>
+  </div>
+</div></div>
+
+<div class="modal-overlay" id="siswaModal"><div class="modal">
+  <h3 style="color:#2874a6">👥 Kelola Jumlah Siswa per Kelas</h3>
+  <p>Atur jumlah siswa <strong>untuk setiap kelas secara individual</strong>.</p>
+  <div class="siswa-toolbar">
+    <label>Samakan semua kelas ke:</label>
+    <input type="number" id="equalizeCount" min="1" max="100" value="36">
+    <button onclick="equalizeAllSiswa()">Terapkan ke Semua</button>
+  </div>
+  <div class="siswa-per-class-list" id="siswaClassList"></div>
+  <div class="selection-summary" id="siswaSummary" style="background:#eaf2f8;color:#1a5276"></div>
+  <div class="modal-actions">
+    <button class="btn-cancel" onclick="closeSiswaManager()">Batal</button>
+    <button class="btn-save-item" onclick="saveSiswaPerClass()">💾 Terapkan</button>
+  </div>
+</div></div>
+
+<div class="modal-overlay" id="strukturModal"><div class="modal">
+  <h3 id="strukturTitle" style="color:#8e44ad">📝 Kelola Ulangan Harian</h3>
+  <p>Tambah, edit, atau hapus jenis penilaian.</p>
+  <div class="item-count-info" id="strukturCountInfo">Total: 0</div>
+  <div class="item-list" id="strukturList"></div>
+  <div class="add-item-form">
+    <input type="text" id="newStrukturName" placeholder="Nama penilaian baru..." maxlength="30" onkeydown="if(event.key==='Enter')addStruktur()">
+    <button id="btnAddStruktur" onclick="addStruktur()">+ Tambah</button>
+  </div>
+  <div class="modal-hint">💡 Minimal 1 kolom.</div>
+  <div class="modal-actions"><button class="btn-cancel" onclick="closeStrukturManager()">Tutup</button></div>
+</div></div>
+
+<div class="modal-overlay" id="classModal"><div class="modal">
+  <h3>🏫 Kelola Kelas, Mapel &amp; KKTP</h3>
+  <p>Setiap kelas memiliki <strong>mapel default</strong>, <strong>KKTP</strong>, dan <strong>jumlah siswa</strong> sendiri.</p>
+  <div class="item-count-info" id="classCountInfo">Total kelas: 0</div>
+  <div class="item-list" id="classList"></div>
+  <div class="add-item-form">
+    <input type="text" id="newClassName" placeholder="Nama kelas baru..." maxlength="50" onkeydown="if(event.key==='Enter')addClass()">
+    <button onclick="addClass()">+ Tambah Kelas</button>
+  </div>
+  <div class="modal-hint">💡 Klik ✏️ Edit untuk mengubah nama, mapel, KKTP, dan jumlah siswa.</div>
+  <div class="modal-actions"><button class="btn-cancel" onclick="closeClassManager()">Tutup</button></div>
+</div></div>
+
+<div class="modal-overlay" id="mapelModal"><div class="modal">
+  <h3>📚 Kelola Mata Pelajaran</h3>
+  <p>Tambah, edit, atau hapus daftar mata pelajaran.</p>
+  <div class="item-list" id="mapelList"></div>
+  <div class="add-item-form">
+    <input type="text" id="newMapelName" placeholder="Nama mata pelajaran baru..." maxlength="50" onkeydown="if(event.key==='Enter')addMapel()">
+    <button onclick="addMapel()">+ Tambah</button>
+  </div>
+  <div class="modal-hint">💡 Minimal 1 mapel.</div>
+  <div class="modal-actions"><button class="btn-cancel" onclick="closeMapelManager()">Tutup</button></div>
+</div></div>
+
+<div class="modal-overlay" id="resetModal"><div class="modal">
+  <h3 style="color:#c0392b">️ Reset untuk Periode Baru</h3>
+  <p>Semua <strong>nilai dan nama siswa</strong> akan dikosongkan.</p>
+  <div class="modal-field"><label for="newMapelReset">Mata Pelajaran Baru:</label><select id="newMapelReset"></select></div>
+  <div class="modal-field"><label for="newKktp">KKTP Baru:</label>
+    <select id="newKktp">
+      <option value="70">70</option><option value="71">71</option><option value="72">72</option>
+      <option value="73">73</option><option value="74">74</option><option value="75" selected>75</option>
+      <option value="76">76</option><option value="77">77</option><option value="78">78</option>
+      <option value="79">79</option><option value="80">80</option>
+    </select>
+  </div>
+  <div class="modal-field"><label for="newSemester">Semester Baru:</label><input type="text" id="newSemester"></div>
+  <div class="modal-field"><label for="newTahun">Tahun Pelajaran Baru:</label><input type="text" id="newTahun"></div>
+  <div class="modal-field"><label for="newClassCount">Jumlah Kelas Awal:</label><input type="number" id="newClassCount" min="1" max="50" value="10"></div>
+  <div class="modal-field"><label for="defaultSiswaCount">Default Jumlah Siswa per Kelas:</label><input type="number" id="defaultSiswaCount" min="1" max="100" value="36"></div>
+  <div class="modal-actions">
+    <button class="btn-cancel" onclick="closeResetModal()">Batal</button>
+    <button class="btn-reset" onclick="resetAllData()">Ya, Reset</button>
+  </div>
+</div></div>
+
+<div class="modal-overlay" id="mappingModal"><div class="modal">
+  <h3 style="color:#2980b9">🔗 Cocokkan Sheet Excel dengan Kelas</h3>
+  <p>Pilih kelas tujuan untuk setiap sheet:</p>
+  <div id="mappingList"></div>
+  <div class="modal-actions">
+    <button class="btn-cancel" onclick="closeMappingModal()">Batal</button>
+    <button class="btn-import" onclick="confirmMapping()">Import Sekarang</button>
+  </div>
+</div></div>
+
+<div class="modal-overlay" id="persistModal"><div class="modal">
+  <h3>📦 Simpan Permanen ke HTML</h3>
+  <p>Membuat <strong>salinan HTML baru</strong> yang berisi data saat ini.</p>
+  <div class="persist-options">
+    <label><input type="radio" name="persistMode" value="full" checked>
+      <span><strong>Salinan Lengkap</strong><br>Nama siswa dan seluruh nilai ikut terbawa.</span></label>
+    <label><input type="radio" name="persistMode" value="fresh">
+      <span><strong>Tampilan Awal (Kosong)</strong><br>Struktur tetap, nama siswa dan nilai dikosongkan.</span></label>
+  </div>
+  <div class="persist-summary" id="persistSummary"></div>
+  <div class="modal-actions">
+    <button class="btn-cancel" onclick="closePersistModal()">Batal</button>
+    <button class="btn-persist" onclick="downloadPersistentHtml()">📦 Unduh HTML Final</button>
+  </div>
+</div></div>
+
+<script id="baked-data" type="application/json">null</script>
+
+<script>
+const BASE_KEY='smkn1gondang_nilai_data';
+const BASE_MAPEL_KEY='smkn1gondang_mapel_list';
+const DEFAULT_CLASS_COUNT=10, DEFAULT_JUMLAH_SISWA=36, DEFAULT_KKTP=75;
+const DEFAULT_UH=['UH 1','UH 2','UH 3'];
+const DEFAULT_TUGAS=['Tugas 1','Tugas 2'];
+const DEFAULT_MAPEL=[{id:1,name:'Matematika'},{id:2,name:'Bahasa Indonesia'},{id:3,name:'Bahasa Inggris'}];
+const PAPER_SIZES={'A4':'210mm 297mm','F4':'215mm 330mm','A3':'297mm 420mm','Letter':'215.9mm 279.4mm'};
+
+let STORAGE_KEY=BASE_KEY, MAPEL_STORAGE_KEY=BASE_MAPEL_KEY;
+let BAKED=null, firstOpenOfBuild=false, memoryStore={}, storageOK=true;
+let currentClass=0, classData=[], mapelList=[], uhList=[], tugasList=[];
+let saveTimeout=null, pendingWorkbook=null, suppressAutoSave=false;
+let currentStrukturKind='uh';
+
+function roundInt(v){ return Math.round(v); }
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function lsGet(k){try{const v=localStorage.getItem(k);return v!==null?v:(memoryStore[k]??null);}catch(e){storageOK=false;return memoryStore[k]??null;}}
+function lsSet(k,v){memoryStore[k]=v;try{localStorage.setItem(k,v);}catch(e){storageOK=false;}}
+function lsRemove(k){delete memoryStore[k];try{localStorage.removeItem(k);}catch(e){}}
+
+function initBakedStorage(){
+  const el=document.getElementById('baked-data'); if(!el)return;
+  let raw=null; try{raw=JSON.parse(el.textContent||'null');}catch(e){raw=null;}
+  if(!raw||!raw.payload||!Array.isArray(raw.payload.classData))return;
+  BAKED=raw;
+  STORAGE_KEY=BASE_KEY+'__'+raw.buildId;
+  MAPEL_STORAGE_KEY=BASE_MAPEL_KEY+'__'+raw.buildId;
+  if(lsGet(STORAGE_KEY)===null){
+    lsSet(STORAGE_KEY,JSON.stringify(raw.payload));
+    lsSet(MAPEL_STORAGE_KEY,JSON.stringify(raw.payload.mapelList||[]));
+    firstOpenOfBuild=true;
+  }
+}
+function updateBakedInfo(){
+  const info=document.getElementById('bakedInfo'), revert=document.getElementById('btnRevert');
+  if(BAKED){
+    let when='';try{when=new Date(BAKED.bakedAt).toLocaleString('id-ID');}catch(e){}
+    info.innerText='📌 Berkas salinan · data tersemat · disimpan '+when;
+    revert.style.display='';
+  }else{
+    info.innerText='📂 Berkas induk · gunakan tombol di samping untuk membuat berkas berbagi.';
+    revert.style.display='none';
+  }
+}
+function revertToBaked(){
+  if(!BAKED){alert('Berkas ini belum memiliki data tersemat.');return;}
+  if(!confirm('Kembalikan tampilan ke data asli yang dilekatkan di file ini?'))return;
+  lsRemove(STORAGE_KEY);lsRemove(MAPEL_STORAGE_KEY);location.reload();
+}
+
+function initEmptyData(count=DEFAULT_CLASS_COUNT,defaultSiswa=DEFAULT_JUMLAH_SISWA){
+  classData=[];
+  for(let i=0;i<count;i++)classData.push({name:`Kelas ${i+1}`,students:[],mapelId:null,kktp:DEFAULT_KKTP,totalSiswa:defaultSiswa});
+}
+function migrateStudent(s){
+  const b=s&&typeof s==='object'?s:{};
+  const oldUh=Array.isArray(b.uh)?b.uh:[], oldT=Array.isArray(b.tugas)?b.tugas:[];
+  const uh=[],tugas=[];
+  for(let i=0;i<uhList.length;i++)uh.push(oldUh[i]??'');
+  for(let i=0;i<tugasList.length;i++)tugas.push(oldT[i]??'');
+  return {name:b.name||'',uh,tugas,semester:b.semester??''};
+}
+function migrateClass(c,fallback=DEFAULT_JUMLAH_SISWA){
+  return {
+    name:c.name||'Kelas',
+    students:Array.isArray(c.students)?c.students.map(migrateStudent):[],
+    mapelId:c.mapelId??null,
+    kktp:(typeof c.kktp==='number'&&c.kktp>=70&&c.kktp<=80)?c.kktp:DEFAULT_KKTP,
+    totalSiswa:(typeof c.totalSiswa==='number'&&c.totalSiswa>0)?c.totalSiswa:fallback
+  };
+}
+function collectAppState(mode='full'){
+  return {version:7,mapel:String(document.getElementById('mapel').value),
+    kktp:String(document.getElementById('kktp').value),guru:document.getElementById('guru').value,
+    semester:document.getElementById('semester').value,tahun:document.getElementById('tahun').value,
+    currentClass:0,mapelList:JSON.parse(JSON.stringify(mapelList)),
+    uhList:[...uhList],tugasList:[...tugasList],
+    classData:classData.map(c=>{
+      const ts=c.totalSiswa||DEFAULT_JUMLAH_SISWA;
+      const out={name:c.name,students:(c.students||[]).slice(0,ts).map(migrateStudent),mapelId:c.mapelId,kktp:c.kktp||DEFAULT_KKTP,totalSiswa:ts};
+      if(mode==='fresh')out.students=Array.from({length:ts},(_,i)=>({name:`Siswa ${i+1}`,uh:uhList.map(()=>''),tugas:tugasList.map(()=>''),semester:''}));
+      return out;
+    })};
+}
+function loadData(){
+  const saved=lsGet(STORAGE_KEY);
+  if(saved){
+    try{
+      const p=JSON.parse(saved);
+      uhList=Array.isArray(p.uhList)&&p.uhList.length?[...p.uhList]:[...DEFAULT_UH];
+      tugasList=Array.isArray(p.tugasList)&&p.tugasList.length?[...p.tugasList]:[...DEFAULT_TUGAS];
+      const legacy=(typeof p.totalSiswa==='number'&&p.totalSiswa>0)?p.totalSiswa:DEFAULT_JUMLAH_SISWA;
+      classData=(Array.isArray(p.classData)?p.classData:[]).map(c=>migrateClass(c,legacy));
+      if(!classData.length)initEmptyData();
+      setMapelValue(p.mapel);setKktpValue(p.kktp??75);
+      document.getElementById('guru').value=p.guru??'[Nama Anda, S.Pd.]';
+      document.getElementById('semester').value=p.semester??'Semester Gasal';
+      document.getElementById('tahun').value=p.tahun??'2026/2027';
+      const idx=parseInt(p.currentClass);
+      currentClass=(!isNaN(idx)&&idx>=0&&idx<classData.length)?idx:0;
+    }catch(e){initEmptyData();setDefaultSelections();}
+  }else{uhList=[...DEFAULT_UH];tugasList=[...DEFAULT_TUGAS];initEmptyData();setDefaultSelections();}
+  if(firstOpenOfBuild)currentClass=0;
+  // Terapkan KKTP dari kelas aktif saat ini
+  applyKktpFromCurrentClass();
+  updateStructureButtons();syncPrintInfo();
+}
+function setDefaultSelections(){
+  uhList=[...DEFAULT_UH];tugasList=[...DEFAULT_TUGAS];
+  if(mapelList.length)document.getElementById('mapel').value=mapelList[0].id;
+  setKktpValue(DEFAULT_KKTP);
+  document.getElementById('guru').value='[Nama Anda, S.Pd.]';
+  document.getElementById('semester').value='Semester Gasal';
+  document.getElementById('tahun').value='2026/2027';
+}
+function setMapelValue(val){
+  const sel=document.getElementById('mapel');
+  if(val===undefined||val===null||val===''){if(mapelList.length)sel.value=mapelList[0].id;return;}
+  if(mapelList.some(m=>String(m.id)===String(val))){sel.value=val;return;}
+  const f=mapelList.find(m=>m.name.toLowerCase()===String(val).toLowerCase());
+  if(f)sel.value=f.id;else if(mapelList.length)sel.value=mapelList[0].id;
+}
+function setKktpValue(val){
+  const sel=document.getElementById('kktp');
+  sel.value=Array.from(sel.options).map(o=>o.value).includes(String(val))?String(val):'75';
+}
+function applyKktpFromCurrentClass(){
+  // Set dropdown KKTP sesuai KKTP kelas yang sedang aktif
+  if(classData[currentClass]){
+    const kktp = classData[currentClass].kktp || DEFAULT_KKTP;
+    suppressAutoSave=true;
+    document.getElementById('kktp').value = String(kktp);
+    suppressAutoSave=false;
+  }
+}
+function saveData(){
+  const data={mapel:document.getElementById('mapel').value,kktp:document.getElementById('kktp').value,
+    guru:document.getElementById('guru').value,semester:document.getElementById('semester').value,
+    tahun:document.getElementById('tahun').value,currentClass,uhList,tugasList,
+    classData:classData.map(c=>({name:c.name,students:(c.students||[]).slice(0,c.totalSiswa||DEFAULT_JUMLAH_SISWA).map(migrateStudent),mapelId:c.mapelId,kktp:c.kktp||DEFAULT_KKTP,totalSiswa:c.totalSiswa||DEFAULT_JUMLAH_SISWA}))};
+  lsSet(STORAGE_KEY,JSON.stringify(data));
+  document.getElementById('saveStatus').innerText=storageOK?'✓ Tersimpan':'⚠ Hanya sesi ini';
+}
+function autoSave(){
+  if(suppressAutoSave)return;
+  clearTimeout(saveTimeout);
+  document.getElementById('saveStatus').innerText='⏳ Menyimpan...';
+  saveTimeout=setTimeout(flushSave,400);
+}
+function flushSave(){clearTimeout(saveTimeout);try{saveCurrentClassData();saveData();}catch(e){console.error(e);}}
+function onSemesterInput(){syncPrintInfo();autoSave();}
+function onTahunInput(){syncPrintInfo();autoSave();}
+function onKktpChange(){autoSave();recalcAllRows();}
+// Handler saat user MANUAL mengubah KKTP → simpan sebagai KKTP default kelas aktif
+function onKktpManualChange(){
+  if(suppressAutoSave)return;
+  if(classData[currentClass]){
+    classData[currentClass].kktp = parseInt(document.getElementById('kktp').value);
+  }
+  autoSave();
+  recalcAllRows();
+}
+function onMapelManualChange(){
+  if(suppressAutoSave)return;
+  if(classData[currentClass])classData[currentClass].mapelId=document.getElementById('mapel').value;
+  autoSave();recalcAllRows();
+}
+function recalcAllRows(){document.querySelectorAll('#class-content tbody tr').forEach(r=>{const i=r.querySelector('.uh');if(i)calculateRow(i);});}
+function syncPrintInfo(){
+  document.getElementById('printSemester').innerText=document.getElementById('semester').value.trim()||'(belum diisi)';
+  document.getElementById('printTahun').innerText=document.getElementById('tahun').value.trim()||'(belum diisi)';
+  const el=document.getElementById('printClassName');
+  if(el&&classData[currentClass])el.innerText=classData[currentClass].name;
+}
+function updateStructureButtons(){
+  const ts=classData[currentClass]?classData[currentClass].totalSiswa:DEFAULT_JUMLAH_SISWA;
+  document.getElementById('btnManageSiswa').innerText=`👥 Kelola Jumlah Siswa (aktif: ${ts})`;
+  document.getElementById('btnManageUh').innerText=`📝 Kelola Ulangan Harian (${uhList.length})`;
+  document.getElementById('btnManageTugas').innerText=`📋 Kelola Tugas (${tugasList.length})`;
+}
+
+function openPrintModal(){flushSave();renderPrintClassList();document.getElementById('printModal').classList.add('active');}
+function closePrintModal(){document.getElementById('printModal').classList.remove('active');}
+function renderPrintClassList(){
+  const list=document.getElementById('printClassList');
+  list.innerHTML=classData.map((c,i)=>{
+    const mapelName=getMapelNameById(c.mapelId)||getMapelNameById(document.getElementById('mapel').value)||'(belum diatur)';
+    const ts=c.totalSiswa||DEFAULT_JUMLAH_SISWA;
+    const filled=(c.students||[]).filter(s=>s&&s.name&&!s.name.startsWith('Siswa ')).length;
+    return `<label class="selection-row" data-idx="${i}">
+      <input type="checkbox" class="print-checkbox" data-idx="${i}" onchange="updatePrintSummary()">
+      <div class="class-info">
+        <div class="class-name-label">${esc(c.name)}${i===currentClass?' <span style="color:#34495e;font-size:10px;">(aktif)</span>':''}</div>
+        <div class="class-meta">${filled} nama terisi dari ${ts} baris · KKTP ${c.kktp||DEFAULT_KKTP}</div>
+      </div>
+      <span class="class-mapel">📚 ${esc(mapelName)}</span>
+      <span class="class-siswa">👥 ${ts}</span>
+    </label>`;
+  }).join('');
+  updatePrintSummary();
+}
+function toggleAllPrint(state){document.querySelectorAll('.print-checkbox').forEach(cb=>cb.checked=state);updatePrintSummary();}
+function updatePrintSummary(){
+  const checked=Array.from(document.querySelectorAll('.print-checkbox:checked'));
+  document.querySelectorAll('#printClassList .selection-row').forEach(row=>{
+    row.classList.toggle('selected',row.querySelector('.print-checkbox').checked);
+  });
+  document.getElementById('printCounter').innerText=`${checked.length} kelas dipilih`;
+  const summary=document.getElementById('printSummary');
+  if(!checked.length){summary.innerHTML='<span style="color:#888">⚠️ Pilih minimal 1 kelas untuk dicetak.</span>';return;}
+  let total=0,filled=0;const names=[];
+  checked.forEach(cb=>{
+    const c=classData[parseInt(cb.dataset.idx)];
+    const ts=c.totalSiswa||DEFAULT_JUMLAH_SISWA;
+    total+=ts;
+    filled+=(c.students||[]).filter(s=>s&&s.name&&!s.name.startsWith('Siswa ')).length;
+    names.push(c.name);
+  });
+  summary.innerHTML=`<strong>Ringkasan Cetak:</strong><br>`+
+    `🏫 Kelas: <b>${checked.length}</b> (${names.map(esc).join(', ')})<br>`+
+    `👥 Total baris: <b>${total}</b> &nbsp;|&nbsp; 👤 Nama terisi: <b>${filled}</b><br>`+
+    `📄 Jumlah halaman: <b>${checked.length}</b>`;
+}
+function doPrintSelected(){
+  const checked=Array.from(document.querySelectorAll('.print-checkbox:checked'));
+  if(!checked.length){alert('Pilih minimal 1 kelas untuk dicetak.');return;}
+  const indices=checked.map(cb=>parseInt(cb.dataset.idx));
+  const orientation=document.getElementById('printOrientation').value;
+  const paper=document.getElementById('printPaperSize').value;
+  const showEmpty=document.getElementById('printShowEmpty').checked;
+  closePrintModal();
+  openPrintWindow(indices,orientation,paper,showEmpty);
+}
+
+function openPrintWindow(indices,orientation='landscape',paper='A4',showEmpty=true){
+  flushSave();
+  if(!indices.length){alert('Tidak ada kelas untuk dicetak.');return;}
+  const html=buildPrintDocument(indices,orientation,paper,showEmpty);
+  const w=window.open('','_blank');
+  if(!w){alert('️ Pop-up diblokir. Izinkan pop-up untuk halaman ini.');return;}
+  w.document.open();w.document.write(html);w.document.close();
+}
+
+function buildPrintDocument(indices,orientation,paper,showEmpty){
+  const semester=document.getElementById('semester').value.trim()||'(belum diisi)';
+  const tahun=document.getElementById('tahun').value.trim()||'(belum diisi)';
+  const guru=document.getElementById('guru').value;
+  const U=uhList.length,T=tugasList.length;
+  const fontSize=(U+T)>8?'8pt':'9pt';
+  const pageCss=`@page { size: ${PAPER_SIZES[paper]||PAPER_SIZES['A4']} ${orientation}; margin: 12mm; }`;
+
+  let colgroup='<colgroup>';
+  colgroup+='<col style="width:4%">';
+  colgroup+='<col style="width:22%">';
+  for(let i=0;i<U;i++) colgroup+=`<col style="width:6%">`;
+  colgroup+=`<col style="width:7%">`;
+  for(let i=0;i<T;i++) colgroup+=`<col style="width:7%">`;
+  colgroup+=`<col style="width:7%">`;
+  colgroup+=`<col style="width:8%">`;
+  colgroup+=`<col style="width:8%">`;
+  colgroup+=`<col style="width:12%">`;
+  colgroup+='</colgroup>';
+
+  const uhHeaders=uhList.map(n=>`<th>${esc(n)}</th>`).join('');
+  const tugasHeaders=tugasList.map(n=>`<th>${esc(n)}</th>`).join('');
+
+  let sections='';
+  indices.forEach(idx=>{
+    const d=classData[idx];if(!d)return;
+    const ts=d.totalSiswa||DEFAULT_JUMLAH_SISWA;
+    const mapelName=getMapelNameById(d.mapelId)||getMapelNameById(document.getElementById('mapel').value)||'-';
+    // ===== PERBAIKAN: gunakan KKTP per kelas =====
+    const kktp=d.kktp||DEFAULT_KKTP;
+
+    let rows='';let printed=0;
+    for(let j=0;j<ts;j++){
+      const raw=d.students[j];
+      if(!showEmpty){
+        if(!raw||!raw.name||!raw.name.trim()||raw.name.startsWith('Siswa '))continue;
+      }
+      const s=migrateStudent(raw||{name:`Siswa ${j+1}`});
+      let su=0,nu=0,st=0,nt=0;
+      s.uh.forEach(v=>{if(v!==''){su+=parseFloat(v);nu++;}});
+      s.tugas.forEach(v=>{if(v!==''){st+=parseFloat(v);nt++;}});
+      const ada=nu>0||nt>0||s.semester!=='';
+      const au=nu?roundInt(su/nu):'-';
+      const at=nt?roundInt(st/nt):'-';
+      const sem=s.semester!==''?esc(s.semester):'-';
+      let na='-',kt='-',kc='';
+      if(ada){
+        const valUH=nu?su/nu:0;
+        const valT=nt?st/nt:0;
+        const valS=s.semester!==''?parseFloat(s.semester):0;
+        const nRaw=(valUH+valT+valS)/3;
+        na=roundInt(nRaw);
+        if(na<kktp){kt='✗ Belum Tuntas';kc='ket-belum';}
+        else{kt='✓ Tuntas';kc='ket-tuntas';}
+      }
+      const uhCells=s.uh.map(v=>`<td>${v!==''?esc(v):'-'}</td>`).join('');
+      const tugasCells=s.tugas.map(v=>`<td>${v!==''?esc(v):'-'}</td>`).join('');
+      rows+=`<tr><td>${j+1}</td><td class="nama-col">${esc(s.name)||'-'}</td>
+        ${uhCells}<td class="bold">${au}</td>${tugasCells}<td class="bold">${at}</td>
+        <td>${sem}</td><td class="bold">${na}</td><td class="${kc}">${kt}</td></tr>`;
+      printed++;
+    }
+    if(!printed){
+      rows=`<tr><td colspan="11" style="height:35px">Belum ada siswa bernama di kelas ini.</td></tr>`;
+    }
+
+    sections+=`
+    <section class="class-section">
+      <div class="kop">
+        <h1>DAFTAR NILAI</h1>
+        <h2>${esc(semester)}</h2>
+        <p><strong>SMKN 1 GONDANG</strong></p>
+        <p>Tahun Pelajaran: <strong>${esc(tahun)}</strong></p>
+      </div>
+      <div class="meta">
+        <div><strong>Kelas:</strong> ${esc(d.name)} &nbsp;|&nbsp;
+          <strong>Mata Pelajaran:</strong> ${esc(mapelName)} &nbsp;|&nbsp;
+          <strong>Guru Pengampu:</strong> ${esc(guru)||'-'}</div>
+        <div><strong>KKTP:</strong> ${esc(kktp)} &nbsp;|&nbsp;
+          <strong>Jumlah Siswa:</strong> ${ts} &nbsp;
+          </div>
+      </div>
+      <table>
+        ${colgroup}
+        <thead>
+          <tr>
+            <th rowspan="2">No</th>
+            <th rowspan="2" class="nama-col">Nama Siswa</th>
+            <th colspan="${U}">Ulangan Harian</th>
+            <th rowspan="2">Rata<br>UH</th>
+            <th colspan="${T}">Tugas</th>
+            <th rowspan="2">Rata<br>Tugas</th>
+            <th rowspan="2">Nilai<br>Semester</th>
+            <th rowspan="2">Nilai<br>Akhir</th>
+            <th rowspan="2">Keterangan</th>
+          </tr>
+          <tr>
+            ${uhHeaders}
+            ${tugasHeaders}
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="footer">Dicetak: ${new Date().toLocaleDateString('id-ID')} &nbsp;•&nbsp; SMKN 1 GONDANG</div>
+    </section>`;
+  });
+
+  return `<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Cetak Daftar Nilai - SMKN 1 GONDANG</title>
+<style>
+${pageCss}
+*{box-sizing:border-box}
+body{font-family:Arial,sans-serif;margin:0;padding:0;background:#fff;color:#000}
+.class-section{page-break-after:always}
+.class-section:last-child{page-break-after:auto}
+.kop{text-align:center;border-bottom:2px solid #000;padding-bottom:6px;margin-bottom:8px}
+.kop h1{font-size:14pt;margin:0;letter-spacing:1px}
+.kop h2{font-size:11pt;margin:3px 0;font-weight:normal}
+.kop p{font-size:10pt;margin:2px 0}
+.meta{font-size:9pt;margin:6px 0 8px;line-height:1.7}
+table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:${fontSize}}
+th,td{border:1px solid #000;padding:4px 3px;text-align:center;height:22px;overflow:hidden;word-wrap:break-word}
+th{background:#eee;font-weight:bold}
+td{height:22px}
+.nama-col{text-align:left}
+.bold{font-weight:bold}
+.ket-tuntas{
+  background:#81c784 !important;background-color:#81c784 !important;
+  color:#1b5e20 !important;font-weight:900 !important;font-size:1.05em !important;
+  border-left:5px solid #1b5e20 !important;text-align:center !important;
+  -webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important;
+}
+.ket-belum{
+  background:#e57373 !important;background-color:#e57373 !important;
+  color:#b71c1c !important;font-weight:900 !important;font-size:1.05em !important;
+  border-left:5px solid #b71c1c !important;text-align:center !important;
+  -webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important;
+}
+.footer{font-size:8pt;color:#555;margin-top:6px;text-align:right}
+</style>
+</head>
+<body>
+${sections}
+<script>
+window.addEventListener('load',function(){
+  setTimeout(function(){window.focus();window.print();},350);
+});
+<\/script>
+</body>
+</html>`;
+}
+
+function printCurrentClass(){
+  flushSave();
+  openPrintWindow([currentClass],
+    document.getElementById('printOrientation').value||'landscape',
+    document.getElementById('printPaperSize').value||'A4',
+    document.getElementById('printShowEmpty').checked);
+}
+function printAllClasses(){
+  flushSave();
+  if(!classData.length){alert('Belum ada kelas.');return;}
+  openPrintWindow(classData.map((c,i)=>i),
+    document.getElementById('printOrientation').value||'landscape',
+    document.getElementById('printPaperSize').value||'A4',
+    document.getElementById('printShowEmpty').checked);
+}
+
+function buildTabs(){
+  const c=document.getElementById('tabs');c.innerHTML='';
+  classData.forEach((cls,i)=>{
+    const b=document.createElement('button');
+    b.className='tab-btn'+(i===currentClass?' active':'');
+    b.innerText=cls.name;b.onclick=()=>switchClass(i);c.appendChild(b);
+  });
+  const b=document.createElement('button');
+  b.className='btn-manage-class';b.innerText='⚙️ Kelola Kelas';b.onclick=openClassManager;c.appendChild(b);
+}
+function switchClass(idx){
+  if(idx===currentClass)return;
+  flushSave();currentClass=idx;
+  const cls=classData[currentClass];
+  suppressAutoSave=true;
+  // Set mapel otomatis
+  if(cls&&cls.mapelId&&mapelList.some(m=>String(m.id)===String(cls.mapelId))){
+    document.getElementById('mapel').value=cls.mapelId;
+  }
+  // ===== BARU: Set KKTP otomatis =====
+  if(cls){
+    const kktp = cls.kktp || DEFAULT_KKTP;
+    document.getElementById('kktp').value = String(kktp);
+  }
+  suppressAutoSave=false;
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));
+  renderClass();updateStructureButtons();saveData();
+}
+function saveCurrentClassData(){
+  if(!classData[currentClass])return;
+  const content=document.getElementById('class-content');
+  if(!content||!content.querySelector('table'))return;
+  const ni=content.querySelector('.class-name-input');
+  if(ni){
+    classData[currentClass].name=ni.value;
+    const tabs=document.querySelectorAll('.tab-btn');
+    if(tabs[currentClass])tabs[currentClass].innerText=ni.value;
+  }
+  const ts=classData[currentClass].totalSiswa||DEFAULT_JUMLAH_SISWA;
+  classData[currentClass].students=[];
+  content.querySelectorAll('tbody tr').forEach(row=>{
+    const inp=row.querySelectorAll('input');
+    const name=inp[0].value,uh=[],tugas=[];
+    for(let i=0;i<uhList.length;i++)uh.push(inp[1+i].value);
+    for(let i=0;i<tugasList.length;i++)tugas.push(inp[1+uhList.length+i].value);
+    const semester=inp[1+uhList.length+tugasList.length].value;
+    classData[currentClass].students.push({name,uh,tugas,semester});
+  });
+  if(classData[currentClass].students.length>ts)classData[currentClass].students.length=ts;
+}
+function renderClass(){
+  if(!classData.length){
+    document.getElementById('class-content').innerHTML='<div style="padding:30px;text-align:center;color:#888">Belum ada kelas. Klik ⚙️ Kelola Kelas.</div>';return;
+  }
+  if(currentClass>=classData.length)currentClass=0;
+  const data=classData[currentClass],ts=data.totalSiswa||DEFAULT_JUMLAH_SISWA;
+  (data.students||[]).forEach((s,i)=>{data.students[i]=migrateStudent(s);if(!data.students[i].name)data.students[i].name=`Siswa ${i+1}`;});
+  while(data.students.length<ts)data.students.push({name:`Siswa ${data.students.length+1}`,uh:uhList.map(()=>''),tugas:tugasList.map(()=>''),semester:''});
+  if(data.students.length>ts)data.students.length=ts;
+  const uhH=uhList.map(n=>`<th>${esc(n)}</th>`).join('');
+  const tH=tugasList.map(n=>`<th>${esc(n)}</th>`).join('');
+  let html=`
+    <div class="class-name-edit no-print">
+      <label>Nama Kelas:</label>
+      <input type="text" class="class-name-input" value="${esc(data.name)}" oninput="updateTabName(this.value)">
+      <span class="class-siswa-badge">👥 ${ts} siswa · KKTP ${data.kktp||DEFAULT_KKTP}</span>
+      <div class="excel-btns">
+        <button class="btn-template" onclick="downloadTemplate()">📋 Template</button>
+        <button class="btn-import" onclick="document.getElementById('excelFile').click()"> Import</button>
+        <button class="btn-export" onclick="exportExcel()">💾 Export</button>
+      </div>
+    </div>
+    <table><thead><tr>
+      <th rowspan="2">No</th><th rowspan="2">Nama Siswa</th>
+      <th colspan="${uhList.length}">Ulangan Harian</th><th rowspan="2">Rata UH</th>
+      <th colspan="${tugasList.length}">Tugas</th><th rowspan="2">Rata Tugas</th>
+      <th rowspan="2">Semester</th><th rowspan="2">Nilai Akhir</th><th rowspan="2">Keterangan</th>
+    </tr><tr>${uhH}${tH}</tr></thead><tbody>`;
+  for(let i=0;i<ts;i++){
+    const s=data.students[i];
+    const uhC=s.uh.map(v=>`<td><input type="number" class="uh" min="0" max="100" value="${esc(v)}" oninput="calculateRow(this)"></td>`).join('');
+    const tC=s.tugas.map(v=>`<td><input type="number" class="tugas" min="0" max="100" value="${esc(v)}" oninput="calculateRow(this)"></td>`).join('');
+    html+=`<tr><td>${i+1}</td>
+      <td><input type="text" class="nama-input" value="${esc(s.name)}" oninput="autoSave()"></td>
+      ${uhC}<td class="auto-calc avg-uh">0</td>${tC}<td class="auto-calc avg-tugas">0</td>
+      <td><input type="number" class="semester" min="0" max="100" value="${esc(s.semester)}" oninput="calculateRow(this)"></td>
+      <td class="final-grade">0</td><td class="ket-cell ket-default">-</td></tr>`;
+  }
+  html+='</tbody></table>';
+  document.getElementById('class-content').innerHTML=html;
+  recalcAllRows();syncPrintInfo();
+}
+function updateTabName(name){
+  const tabs=document.querySelectorAll('.tab-btn');
+  if(tabs[currentClass])tabs[currentClass].innerText=name;
+  document.getElementById('printClassName').innerText=name;autoSave();
+}
+function calculateRow(el){
+  const row=el.closest('tr');let su=0,nu=0,st=0,nt=0;
+  row.querySelectorAll('.uh').forEach(i=>{if(i.value!==''){su+=parseFloat(i.value);nu++;}});
+  row.querySelectorAll('.tugas').forEach(i=>{if(i.value!==''){st+=parseFloat(i.value);nt++;}});
+  const au=nu?su/nu:0,at=nt?st/nt:0;
+  const se=row.querySelector('.semester'),sem=se.value!==''?parseFloat(se.value):0;
+  const na=(au+at+sem)/3;
+  row.querySelector('.avg-uh').innerText=nu?roundInt(au):'0';
+  row.querySelector('.avg-tugas').innerText=nt?roundInt(at):'0';
+  row.querySelector('.final-grade').innerText=roundInt(na);
+  const kktp=parseFloat(document.getElementById('kktp').value),cell=row.querySelector('.ket-cell');
+  const ada=nu>0||nt>0||se.value!=='';
+  if(!ada){cell.innerText='-';cell.className='ket-cell ket-default';}
+  else{
+    const finalNa=roundInt(na);
+    if(finalNa<kktp){cell.innerText='✗ Belum Tuntas';cell.className='ket-cell ket-belum';}
+    else{cell.innerText='✓ Tuntas';cell.className='ket-cell ket-tuntas';}
+  }
+  autoSave();
+}
+
+function loadMapelList(){
+  const saved=lsGet(MAPEL_STORAGE_KEY);
+  if(saved){try{const p=JSON.parse(saved);if(Array.isArray(p)&&p.length){mapelList=p;return;}}catch(e){}}
+  mapelList=BAKED&&Array.isArray(BAKED.payload.mapelList)&&BAKED.payload.mapelList.length
+    ?JSON.parse(JSON.stringify(BAKED.payload.mapelList)):JSON.parse(JSON.stringify(DEFAULT_MAPEL));
+  lsSet(MAPEL_STORAGE_KEY,JSON.stringify(mapelList));
+}
+function saveMapelList(){lsSet(MAPEL_STORAGE_KEY,JSON.stringify(mapelList));}
+function getNextId(){return mapelList.length?Math.max(...mapelList.map(m=>m.id))+1:1;}
+function getMapelNameById(id){const m=mapelList.find(x=>String(x.id)===String(id));return m?m.name:'';}
+function renderMapelDropdown(){
+  const sel=document.getElementById('mapel'),cur=sel.value;
+  sel.innerHTML=mapelList.map(m=>`<option value="${m.id}">${esc(m.name)}</option>`).join('');
+  if(mapelList.some(m=>String(m.id)===String(cur)))sel.value=cur;
+  else if(mapelList.length)sel.value=mapelList[0].id;
+}
+function openMapelManager(){renderMapelManagerList();document.getElementById('newMapelName').value='';document.getElementById('mapelModal').classList.add('active');}
+function closeMapelManager(){document.getElementById('mapelModal').classList.remove('active');}
+function renderMapelManagerList(){
+  document.getElementById('mapelList').innerHTML=mapelList.length?mapelList.map(m=>`
+    <div class="item-row" data-id="${m.id}">
+      <span class="item-name">${esc(m.name)}</span>
+      <div class="item-actions">
+        <button class="btn-edit-item" onclick="startEditMapel(${m.id})">✏️ Edit</button>
+        <button class="btn-delete-item" onclick="deleteMapel(${m.id})">️ Hapus</button>
+      </div>
+    </div>`).join(''):'<div class="item-empty">Belum ada mata pelajaran.</div>';
+}
+function startEditMapel(id){
+  const m=mapelList.find(x=>x.id===id);if(!m)return;
+  document.querySelector(`.item-row[data-id="${id}"]`).innerHTML=`
+    <span class="item-name"><input type="text" id="editMapelInput" value="${esc(m.name)}" maxlength="50"
+      onkeydown="if(event.key==='Enter')saveEditMapel(${id});if(event.key==='Escape')renderMapelManagerList()"></span>
+    <div class="item-actions">
+      <button class="btn-save-item" onclick="saveEditMapel(${id})">💾 Simpan</button>
+      <button class="btn-cancel-edit" onclick="renderMapelManagerList()">Batal</button>
+    </div>`;
+  const i=document.getElementById('editMapelInput');i.focus();i.select();
+}
+function saveEditMapel(id){
+  const name=document.getElementById('editMapelInput').value.trim();
+  if(!name){alert('Nama tidak boleh kosong.');return;}
+  if(mapelList.some(m=>m.id!==id&&m.name.toLowerCase()===name.toLowerCase())){alert('Nama mapel sudah ada.');return;}
+  mapelList.find(m=>m.id===id).name=name;
+  saveMapelList();renderMapelManagerList();renderMapelDropdown();autoSave();
+}
+function deleteMapel(id){
+  if(mapelList.length===1){alert('Minimal harus ada 1 mapel.');return;}
+  const m=mapelList.find(x=>x.id===id);
+  if(!confirm(`Hapus mata pelajaran "${m.name}"?`))return;
+  const was=String(document.getElementById('mapel').value)===String(id);
+  mapelList=mapelList.filter(x=>x.id!==id);
+  classData.forEach(c=>{if(String(c.mapelId)===String(id))c.mapelId=null;});
+  saveMapelList();renderMapelManagerList();renderMapelDropdown();
+  if(was&&mapelList.length)document.getElementById('mapel').value=mapelList[0].id;
+  autoSave();
+}
+function addMapel(){
+  const inp=document.getElementById('newMapelName'),name=inp.value.trim();
+  if(!name){alert('Nama tidak boleh kosong.');return;}
+  if(mapelList.some(m=>m.name.toLowerCase()===name.toLowerCase())){alert('Nama mapel sudah ada.');return;}
+  mapelList.push({id:getNextId(),name});saveMapelList();inp.value='';
+  renderMapelManagerList();renderMapelDropdown();
+  document.getElementById('mapel').value=mapelList[mapelList.length-1].id;autoSave();
+}
+
+function openStrukturManager(kind){
+  currentStrukturKind=kind;
+  document.getElementById('strukturTitle').innerText=kind==='uh'?'📝 Kelola Ulangan Harian':'📋 Kelola Tugas';
+  document.getElementById('strukturTitle').style.color=kind==='uh'?'#8e44ad':'#d35400';
+  document.getElementById('newStrukturName').placeholder=kind==='uh'?'Nama UH baru (mis. UH 4)...':'Nama tugas baru (mis. Proyek)...';
+  document.getElementById('newStrukturName').value='';
+  document.getElementById('btnAddStruktur').innerText=kind==='uh'?'+ Tambah UH':'+ Tambah Tugas';
+  renderStrukturList();
+  document.getElementById('strukturModal').classList.add('active');
+}
+function closeStrukturManager(){document.getElementById('strukturModal').classList.remove('active');}
+function renderStrukturList(){
+  const arr=currentStrukturKind==='uh'?uhList:tugasList;
+  document.getElementById('strukturCountInfo').innerText=`Total ${currentStrukturKind==='uh'?'UH':'Tugas'}: ${arr.length}`;
+  document.getElementById('strukturList').innerHTML=arr.length?arr.map((name,i)=>`
+    <div class="item-row" data-idx="${i}">
+      <span class="item-name">${esc(name)}</span>
+      <div class="item-actions">
+        <button class="btn-edit-item" onclick="startEditStruktur(${i})">✏️ Edit</button>
+        <button class="btn-delete-item" onclick="deleteStruktur(${i})">🗑️ Hapus</button>
+      </div>
+    </div>`).join(''):'<div class="item-empty">Belum ada item.</div>';
+}
+function startEditStruktur(idx){
+  const arr=currentStrukturKind==='uh'?uhList:tugasList;
+  document.querySelector(`#strukturList .item-row[data-idx="${idx}"]`).innerHTML=`
+    <span class="item-name"><input type="text" id="editStrukturInput" value="${esc(arr[idx])}" maxlength="30"
+      onkeydown="if(event.key==='Enter')saveEditStruktur(${idx});if(event.key==='Escape')renderStrukturList()"></span>
+    <div class="item-actions">
+      <button class="btn-save-item" onclick="saveEditStruktur(${idx})">💾 Simpan</button>
+      <button class="btn-cancel-edit" onclick="renderStrukturList()">Batal</button>
+    </div>`;
+  const i=document.getElementById('editStrukturInput');i.focus();i.select();
+}
+function saveEditStruktur(idx){
+  const arr=currentStrukturKind==='uh'?uhList:tugasList;
+  const name=document.getElementById('editStrukturInput').value.trim();
+  if(!name){alert('Nama tidak boleh kosong.');return;}
+  if(arr.some((n,i2)=>i2!==idx&&n.toLowerCase()===name.toLowerCase())){alert('Nama sudah ada.');return;}
+  arr[idx]=name;
+  flushSave();renderStrukturList();renderClass();updateStructureButtons();
+}
+function deleteStruktur(idx){
+  const kind=currentStrukturKind,arr=kind==='uh'?uhList:tugasList;
+  if(arr.length===1){alert('Minimal harus ada 1 kolom.');return;}
+  const name=arr[idx];let affected=0;
+  classData.forEach(c=>(c.students||[]).forEach(s=>{
+    if(s&&Array.isArray(s[kind])&&s[kind][idx]!==''&&s[kind][idx]!==undefined)affected++;
+  }));
+  let msg=`Hapus "${name}"?`;
+  if(affected)msg+=`\n\n⚠️ ${affected} baris siswa memiliki nilai di kolom ini.`;
+  if(!confirm(msg))return;
+  flushSave();arr.splice(idx,1);
+  classData.forEach(c=>(c.students||[]).forEach(s=>{if(s&&Array.isArray(s[kind]))s[kind].splice(idx,1);}));
+  saveData();renderStrukturList();renderClass();updateStructureButtons();
+}
+function addStruktur(){
+  const kind=currentStrukturKind,arr=kind==='uh'?uhList:tugasList;
+  const inp=document.getElementById('newStrukturName'),name=inp.value.trim();
+  if(!name){alert('Nama tidak boleh kosong.');return;}
+  if(arr.some(n=>n.toLowerCase()===name.toLowerCase())){alert('Nama sudah ada.');return;}
+  flushSave();arr.push(name);
+  classData.forEach(c=>(c.students||[]).forEach(s=>{if(s&&Array.isArray(s[kind]))s[kind].push('');}));
+  inp.value='';saveData();renderStrukturList();renderClass();updateStructureButtons();
+}
+
+function openClassManager(){renderClassManagerList();document.getElementById('newClassName').value='';document.getElementById('classModal').classList.add('active');}
+function closeClassManager(){document.getElementById('classModal').classList.remove('active');}
+function renderClassManagerList(){
+  document.getElementById('classCountInfo').innerText='Total kelas: '+classData.length;
+  document.getElementById('classList').innerHTML=classData.length?classData.map((c,i)=>{
+    const mapelName=getMapelNameById(c.mapelId)||'(belum diatur)';
+    const kktp=c.kktp||DEFAULT_KKTP;
+    return `
+    <div class="item-row" data-idx="${i}">
+      <span class="item-name">${esc(c.name)}</span>
+      <span class="item-mapel">📚 ${esc(mapelName)}</span>
+      <span class="item-mapel" style="background:#fef5e7;color:#d35400">🎯 KKTP ${kktp}</span>
+      <span class="item-mapel" style="background:#d6eaf8;color:#1a5276">👥 ${c.totalSiswa||DEFAULT_JUMLAH_SISWA}</span>
+      <div class="item-actions">
+        <button class="btn-edit-item" onclick="startEditClass(${i})">✏️ Edit</button>
+        <button class="btn-delete-item" onclick="deleteClass(${i})">🗑️ Hapus</button>
+      </div>
+    </div>`;
+  }).join(''):'<div class="item-empty">Belum ada kelas.</div>';
+}
+function startEditClass(idx){
+  const c=classData[idx];if(!c)return;
+  const def=c.mapelId||document.getElementById('mapel').value;
+  const opts=mapelList.map(m=>`<option value="${m.id}" ${String(m.id)===String(def)?'selected':''}>${esc(m.name)}</option>`).join('');
+  const kktpOpts=Array.from({length:11},(_,i)=>{
+    const v=70+i;
+    return `<option value="${v}" ${v===(c.kktp||DEFAULT_KKTP)?'selected':''}>${v}</option>`;
+  }).join('');
+  document.querySelector(`#classList .item-row[data-idx="${idx}"]`).innerHTML=`
+    <div class="edit-class-row">
+      <input type="text" id="editClassInput" value="${esc(c.name)}" maxlength="50" placeholder="Nama kelas">
+      <select id="editClassMapel">${opts}</select>
+      <select id="editClassKktp" title="KKTP">${kktpOpts}</select>
+      <input type="number" id="editClassSiswa" min="1" max="100" value="${c.totalSiswa||DEFAULT_JUMLAH_SISWA}" style="width:70px" title="Jumlah siswa">
+    </div>
+    <div class="item-actions">
+      <button class="btn-save-item" onclick="saveEditClass(${idx})">💾 Simpan</button>
+      <button class="btn-cancel-edit" onclick="renderClassManagerList()">Batal</button>
+    </div>`;
+  const i=document.getElementById('editClassInput');i.focus();i.select();
+}
+function saveEditClass(idx){
+  const name=document.getElementById('editClassInput').value.trim();
+  const mapelId=document.getElementById('editClassMapel').value;
+  const kktp=parseInt(document.getElementById('editClassKktp').value);
+  const newSiswa=parseInt(document.getElementById('editClassSiswa').value);
+  if(!name){alert('Nama kelas tidak boleh kosong.');return;}
+  if(isNaN(kktp)||kktp<70||kktp>80){alert('KKTP harus antara 70-80.');return;}
+  if(isNaN(newSiswa)||newSiswa<1||newSiswa>100){alert('Jumlah siswa harus 1-100.');return;}
+  const old=classData[idx].totalSiswa||DEFAULT_JUMLAH_SISWA;
+  if(newSiswa<old){
+    let lost=0;const st=classData[idx].students||[];
+    for(let j=newSiswa;j<st.length;j++){
+      const s=st[j];
+      if(s&&((s.name&&!s.name.startsWith('Siswa '))||(Array.isArray(s.uh)&&s.uh.some(v=>v!==''))||(Array.isArray(s.tugas)&&s.tugas.some(v=>v!==''))||s.semester!==''))lost++;
+    }
+    if(lost&&!confirm(`️ ${lost} baris siswa memiliki data yang akan terhapus. Lanjutkan?`))return;
+  }
+  classData[idx].name=name;classData[idx].mapelId=mapelId;classData[idx].kktp=kktp;
+  let st=classData[idx].students||[];
+  if(st.length>newSiswa)st=st.slice(0,newSiswa);
+  else while(st.length<newSiswa)st.push({name:`Siswa ${st.length+1}`,uh:uhList.map(()=>''),tugas:tugasList.map(()=>''),semester:''});
+  classData[idx].students=st;classData[idx].totalSiswa=newSiswa;
+  if(idx===currentClass){
+    suppressAutoSave=true;
+    document.getElementById('mapel').value=mapelId;
+    document.getElementById('kktp').value=String(kktp);
+    suppressAutoSave=false;
+    const i=document.querySelector('#class-content .class-name-input');if(i)i.value=name;
+  }
+  renderClassManagerList();buildTabs();renderClass();syncPrintInfo();updateStructureButtons();saveData();
+}
+function deleteClass(idx){
+  if(classData.length===1){alert('Minimal harus ada 1 kelas.');return;}
+  const c=classData[idx];
+  const filled=(c.students||[]).filter(s=>s&&s.name&&!s.name.startsWith('Siswa ')).length;
+  let msg=`Hapus kelas "${c.name}"?`;
+  if(filled)msg+=`\n\n⚠️ Ada ${filled} siswa dengan data nilai.`;
+  if(!confirm(msg+'\n\nTidak bisa dibatalkan.'))return;
+  flushSave();classData.splice(idx,1);
+  if(currentClass>=classData.length)currentClass=classData.length-1;
+  else if(currentClass>=idx)currentClass--;
+  buildTabs();renderClass();saveData();renderClassManagerList();updateStructureButtons();
+}
+function addClass(){
+  const inp=document.getElementById('newClassName'),name=inp.value.trim();
+  if(!name){alert('Nama kelas tidak boleh kosong.');return;}
+  flushSave();
+  const ds=classData[currentClass]?classData[currentClass].totalSiswa:DEFAULT_JUMLAH_SISWA;
+  const dk=classData[currentClass]?(classData[currentClass].kktp||DEFAULT_KKTP):DEFAULT_KKTP;
+  classData.push({name,students:[],mapelId:document.getElementById('mapel').value,kktp:dk,totalSiswa:ds});
+  currentClass=classData.length-1;inp.value='';
+  buildTabs();renderClass();saveData();renderClassManagerList();updateStructureButtons();
+}
+
+const SISWA_PRESETS=[20,25,30,32,35,36,40];
+function openSiswaManager(){flushSave();renderSiswaClassList();document.getElementById('siswaModal').classList.add('active');}
+function closeSiswaManager(){document.getElementById('siswaModal').classList.remove('active');}
+function renderSiswaClassList(){
+  document.getElementById('siswaClassList').innerHTML=classData.map((c,i)=>`
+    <div class="siswa-class-row ${i===currentClass?'active-class':''}">
+      <div class="class-label">${esc(c.name)}${i===currentClass?' <span style="color:#2874a6;font-size:10px">(aktif)</span>':''}
+        <span class="current-info">${(c.students||[]).length} baris · ${(c.students||[]).filter(s=>s&&s.name&&!s.name.startsWith('Siswa ')).length} nama terisi</span>
+      </div>
+      <input type="number" class="siswa-count-input" data-idx="${i}" min="1" max="100" value="${c.totalSiswa||DEFAULT_JUMLAH_SISWA}" oninput="updateSiswaSummary()">
+      <div class="preset-btns">${SISWA_PRESETS.map(n=>`<button onclick="setSiswaPreset(${i},${n})">${n}</button>`).join('')}</div>
+    </div>`).join('');
+  updateSiswaSummary();
+}
+function setSiswaPreset(idx,n){const i=document.querySelector(`.siswa-count-input[data-idx="${idx}"]`);if(i){i.value=n;updateSiswaSummary();}}
+function equalizeAllSiswa(){
+  const v=parseInt(document.getElementById('equalizeCount').value);
+  if(isNaN(v)||v<1||v>100){alert('Jumlah harus 1-100.');return;}
+  document.querySelectorAll('.siswa-count-input').forEach(i=>i.value=v);updateSiswaSummary();
+}
+function countLost(c,newCount){
+  let lost=0;const st=c.students||[];
+  for(let j=newCount;j<st.length;j++){
+    const s=st[j];
+    if(s&&((s.name&&!s.name.startsWith('Siswa '))||(Array.isArray(s.uh)&&s.uh.some(v=>v!==''))||(Array.isArray(s.tugas)&&s.tugas.some(v=>v!==''))||s.semester!==''))lost++;
+  }
+  return lost;
+}
+function updateSiswaSummary(){
+  let total=0,lost=0;
+  classData.forEach((c,i)=>{
+    const n=parseInt(document.querySelector(`.siswa-count-input[data-idx="${i}"]`).value)||0;
+    total+=n;lost+=countLost(c,n);
+  });
+  document.getElementById('siswaSummary').innerHTML=`<strong>Ringkasan:</strong><br>`+
+    `📊 Total baris setelah diterapkan: <b>${total}</b> di ${classData.length} kelas<br>`+
+    (lost?`<span style="color:#c0392b">⚠️ <b>${lost} baris</b> memiliki data yang akan terhapus.</span>`:`<span style="color:#27ae60">✓ Tidak ada data yang akan hilang.</span>`);
+}
+function saveSiswaPerClass(){
+  const counts=[];
+  for(let i=0;i<classData.length;i++){
+    const inp=document.querySelector(`.siswa-count-input[data-idx="${i}"]`),v=parseInt(inp.value);
+    if(isNaN(v)||v<1||v>100){alert(`Jumlah siswa "${classData[i].name}" harus 1-100.`);inp.focus();return;}
+    counts.push(v);
+  }
+  let lost=0;classData.forEach((c,i)=>lost+=countLost(c,counts[i]));
+  if(lost&&!confirm(`⚠️ ${lost} baris siswa memiliki data yang akan terhapus. Lanjutkan?`))return;
+  classData.forEach((c,i)=>{
+    const n=counts[i];let st=c.students||[];
+    if(st.length>n)st=st.slice(0,n);
+    else while(st.length<n)st.push({name:`Siswa ${st.length+1}`,uh:uhList.map(()=>''),tugas:tugasList.map(()=>''),semester:''});
+    c.students=st;c.totalSiswa=n;
+  });
+  flushSave();updateStructureButtons();renderClass();closeSiswaManager();
+  alert('✓ Jumlah siswa per kelas berhasil diperbarui.');
+}
+
+function checkXLSX(){if(typeof XLSX==='undefined'){alert('⚠️ Library Excel belum termuat.');return false;}return true;}
+function extractNamesFromSheet(rows){
+  if(!rows.length)return[];
+  let start=0;
+  const head=rows[0].map(c=>String(c).trim().toLowerCase());
+  if(head.some(c=>['no','no.','nama','nama siswa','name'].includes(c)))start=1;
+  const names=[];
+  for(let i=start;i<rows.length;i++){
+    const r=rows[i];let name='';
+    if(r.length>1&&String(r[1]).trim()!=='')name=String(r[1]).trim();
+    else if(r.length){const a=String(r[0]).trim();if(a&&isNaN(a))name=a;}
+    if(name)names.push(name);
+  }
+  return names;
+}
+function applyNamesToClass(idx,names){
+  const ts=classData[idx].totalSiswa||DEFAULT_JUMLAH_SISWA,limit=Math.min(names.length,ts);
+  for(let i=0;i<limit;i++){
+    if(!classData[idx].students[i])classData[idx].students[i]=migrateStudent({name:`Siswa ${i+1}`});
+    classData[idx].students[i].name=names[i];
+  }
+  return limit;
+}
+function downloadTemplate(){
+  if(!checkXLSX())return;
+  const ts=classData[currentClass].totalSiswa||DEFAULT_JUMLAH_SISWA,aoa=[['No','Nama Siswa']];
+  for(let i=1;i<=ts;i++)aoa.push([i,'']);
+  const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=[{wch:5},{wch:35}];
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Daftar Siswa');
+  XLSX.writeFile(wb,'template-siswa-'+classData[currentClass].name.replace(/[^a-z0-9]/gi,'_')+'.xlsx');
+}
+function downloadTemplateAll(){
+  if(!checkXLSX())return;if(!classData.length){alert('Belum ada kelas.');return;}
+  flushSave();const wb=XLSX.utils.book_new();
+  classData.forEach(c=>{
+    const ts=c.totalSiswa||DEFAULT_JUMLAH_SISWA,aoa=[['No','Nama Siswa']];
+    for(let j=1;j<=ts;j++)aoa.push([j,'']);
+    const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=[{wch:5},{wch:35}];
+    XLSX.utils.book_append_sheet(wb,ws,c.name.substring(0,31));
+  });
+  XLSX.writeFile(wb,'template-semua-kelas.xlsx');
+  alert(`✓ Template ${classData.length} kelas terunduh.`);
+}
+function importExcel(event){
+  if(!checkXLSX()){event.target.value='';return;}
+  const file=event.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const wbk=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
+      const rows=XLSX.utils.sheet_to_json(wbk.Sheets[wbk.SheetNames[0]],{header:1,defval:''});
+      const names=extractNamesFromSheet(rows);
+      if(!names.length){alert('Tidak ada nama siswa terdeteksi.');event.target.value='';return;}
+      const ts=classData[currentClass].totalSiswa||DEFAULT_JUMLAH_SISWA;
+      if(!confirm(`Kelas: ${classData[currentClass].name} (maks ${ts} siswa)\nDitemukan ${names.length} nama.\nNilai lama DIPERTAHANKAN. Lanjutkan?`)){event.target.value='';return;}
+      flushSave();const n=applyNamesToClass(currentClass,names);
+      saveData();renderClass();alert(`✓ Import ${n} nama.`);
+    }catch(err){alert('Gagal membaca file: '+err.message);}
+    event.target.value='';
+  };
+  reader.readAsArrayBuffer(file);
+}
+function importExcelAll(event){
+  if(!checkXLSX()){event.target.value='';return;}
+  if(!classData.length){alert('Belum ada kelas.');event.target.value='';return;}
+  const file=event.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{pendingWorkbook=XLSX.read(new Uint8Array(e.target.result),{type:'array'});showMappingModal();}
+    catch(err){alert('Gagal membaca file: '+err.message);}
+    event.target.value='';
+  };
+  reader.readAsArrayBuffer(file);
+}
+function showMappingModal(){
+  const list=document.getElementById('mappingList');list.innerHTML='';
+  pendingWorkbook.SheetNames.forEach((sheetName,idx)=>{
+    let def=0;const s=sheetName.toLowerCase().trim();
+    for(let i=0;i<classData.length;i++){
+      const c=classData[i].name.toLowerCase().trim();
+      if(s===c||s.includes(c)||c.includes(s)){def=i;break;}
+    }
+    const div=document.createElement('div');div.className='mapping-row';
+    div.innerHTML=`<span class="sheet-name">${esc(sheetName)}</span><span>→</span>
+      <select data-sheet-idx="${idx}">${classData.map((c,i)=>`<option value="${i}" ${i===def?'selected':''}>${esc(c.name)}</option>`).join('')}</select>`;
+    list.appendChild(div);
+  });
+  document.getElementById('mappingModal').classList.add('active');
+}
+function closeMappingModal(){document.getElementById('mappingModal').classList.remove('active');pendingWorkbook=null;}
+function confirmMapping(){
+  if(!pendingWorkbook)return;flushSave();
+  let total=0;const used=new Set();
+  document.querySelectorAll('#mappingList select').forEach(sel=>{
+    const si=parseInt(sel.dataset.sheetIdx),ci=parseInt(sel.value),sn=pendingWorkbook.SheetNames[si];
+    const rows=XLSX.utils.sheet_to_json(pendingWorkbook.Sheets[sn],{header:1,defval:''});
+    const names=extractNamesFromSheet(rows);
+    if(names.length){total+=applyNamesToClass(ci,names);used.add(ci);}
+  });
+  saveData();buildTabs();renderClass();closeMappingModal();
+  alert(`✓ Import berhasil: ${total} nama di ${used.size} kelas.`);
+}
+function buildExportCols(){
+  const cols=[{wch:4},{wch:30}];
+  for(let i=0;i<uhList.length;i++)cols.push({wch:7});
+  cols.push({wch:8});
+  for(let i=0;i<tugasList.length;i++)cols.push({wch:8});
+  cols.push({wch:9},{wch:8},{wch:10},{wch:6},{wch:13});
+  return cols;
+}
+function buildClassExportAoa(c,kktp,guru){
+  const ts=c.totalSiswa||DEFAULT_JUMLAH_SISWA;
+  const mapelName=getMapelNameById(c.mapelId)||getMapelNameById(document.getElementById('mapel').value);
+  const h1=['No','Nama Siswa'];
+  h1.push(...Array(uhList.length).fill('Ulangan Harian'),'Rata UH');
+  h1.push(...Array(tugasList.length).fill('Tugas'),'Rata Tugas','Semester','Nilai Akhir','KKTP','Keterangan');
+  const h2=['',''];h2.push(...uhList,'',...tugasList,'','','','','','');
+  const aoa=[[`KELAS: ${c.name}`],[`Mapel: ${mapelName} | Guru: ${guru} | KKTP: ${kktp} | Jumlah Siswa: ${ts}`],[],h1,h2];
+  for(let i=0;i<ts;i++){
+    const s=migrateStudent(c.students[i]||{name:`Siswa ${i+1}`});
+    let su=0,nu=0,st=0,nt=0;
+    s.uh.forEach(v=>{if(v!==''){su+=parseFloat(v);nu++;}});
+    s.tugas.forEach(v=>{if(v!==''){st+=parseFloat(v);nt++;}});
+    const au=nu?roundInt(su/nu):'',at=nt?roundInt(st/nt):'';
+    const sem=s.semester!==''?parseFloat(s.semester):'';
+    const ada=nu>0||nt>0||s.semester!=='';
+    let na='',ket='';
+    if(ada){
+      const nRaw=((nu?su/nu:0)+(nt?st/nt:0)+(s.semester!==''?parseFloat(s.semester):0))/3;
+      na=roundInt(nRaw);
+      ket=na<kktp?' Belum Tuntas':'✓ Tuntas';
+    }
+    aoa.push([i+1,s.name,...s.uh,au,...s.tugas,at,sem,na,kktp,ket]);
+  }
+  return aoa;
+}
+function exportExcel(){
+  if(!checkXLSX())return;flushSave();
+  const d=classData[currentClass],kktp=d.kktp||DEFAULT_KKTP,guru=document.getElementById('guru').value;
+  const ws=XLSX.utils.aoa_to_sheet(buildClassExportAoa(d,kktp,guru));ws['!cols']=buildExportCols();
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,d.name.substring(0,31));
+  const mp=(getMapelNameById(document.getElementById('mapel').value)||'mapel').replace(/[^a-z0-9]/gi,'_');
+  XLSX.writeFile(wb,`nilai-${mp}-${d.name.replace(/[^a-z0-9]/gi,'_')}.xlsx`);
+}
+
+function openExportModal(){flushSave();renderExportClassList();document.getElementById('exportModal').classList.add('active');}
+function closeExportModal(){document.getElementById('exportModal').classList.remove('active');}
+function renderExportClassList(){
+  document.getElementById('exportClassList').innerHTML=classData.map((c,i)=>{
+    const ts=c.totalSiswa||DEFAULT_JUMLAH_SISWA;
+    const filled=(c.students||[]).filter(s=>s&&s.name&&!s.name.startsWith('Siswa ')).length;
+    return `<label class="selection-row" data-idx="${i}">
+      <input type="checkbox" class="export-checkbox" data-idx="${i}" onchange="updateExportSummary()">
+      <div class="class-info"><div class="class-name-label">${esc(c.name)}${i===currentClass?' <span style="color:#e67e22;font-size:10px">(aktif)</span>':''}</div>
+      <div class="class-meta">${filled} nama terisi dari ${ts} baris · KKTP ${c.kktp||DEFAULT_KKTP}</div></div>
+      <span class="class-mapel">📚 ${esc(getMapelNameById(c.mapelId)||'(belum diatur)')}</span>
+      <span class="class-siswa">👥 ${ts}</span></label>`;
+  }).join('');
+  updateExportSummary();
+}
+function toggleAllExport(state){document.querySelectorAll('.export-checkbox').forEach(cb=>cb.checked=state);updateExportSummary();}
+function updateExportSummary(){
+  const checked=Array.from(document.querySelectorAll('.export-checkbox:checked'));
+  document.querySelectorAll('#exportClassList .selection-row').forEach(r=>r.classList.toggle('selected',r.querySelector('.export-checkbox').checked));
+  document.getElementById('exportCounter').innerText=`${checked.length} kelas dipilih`;
+  const sum=document.getElementById('exportSummary');
+  if(!checked.length){sum.innerHTML='<span style="color:#888">⚠️ Pilih minimal 1 kelas.</span>';return;}
+  let total=0,names=[];
+  checked.forEach(cb=>{const c=classData[parseInt(cb.dataset.idx)];total+=c.totalSiswa||DEFAULT_JUMLAH_SISWA;names.push(c.name);});
+  sum.innerHTML=`<strong>Ringkasan Export:</strong><br> <b>${checked.length}</b> kelas (${names.map(esc).join(', ')})<br>👥 Total baris siswa: <b>${total}</b>`;
+}
+function doExportSelected(){
+  if(!checkXLSX())return;
+  const checked=Array.from(document.querySelectorAll('.export-checkbox:checked'));
+  if(!checked.length){alert('Pilih minimal 1 kelas.');return;}
+  flushSave();
+  const mode=document.querySelector('input[name="exportMode"]:checked').value;
+  const guru=document.getElementById('guru').value;
+  const indices=checked.map(cb=>parseInt(cb.dataset.idx));
+  const mp=(getMapelNameById(document.getElementById('mapel').value)||'mapel').replace(/[^a-z0-9]/gi,'_');
+  const wb=XLSX.utils.book_new();
+  if(mode==='sheet'){
+    indices.forEach(idx=>{
+      const c=classData[idx];
+      const kktp=c.kktp||DEFAULT_KKTP;
+      const ws=XLSX.utils.aoa_to_sheet(buildClassExportAoa(c,kktp,guru));
+      ws['!cols']=buildExportCols();XLSX.utils.book_append_sheet(wb,ws,c.name.substring(0,31));
+    });
+    XLSX.writeFile(wb,`nilai-${mp}-pilihan-${indices.length}kelas.xlsx`);
+  }else{
+    const aoa=[];
+    indices.forEach((idx,i)=>{
+      const c=classData[idx],ts=c.totalSiswa||DEFAULT_JUMLAH_SISWA;
+      const kktp=c.kktp||DEFAULT_KKTP;
+      const mapelName=getMapelNameById(c.mapelId)||getMapelNameById(document.getElementById('mapel').value);
+      aoa.push([`KELAS: ${c.name}`],[`Mapel: ${mapelName} | Guru: ${guru} | KKTP: ${kktp} | Jumlah Siswa: ${ts}`],[]);
+      const h1=['No','Nama Siswa'];h1.push(...Array(uhList.length).fill('Ulangan Harian'),'Rata UH');
+      h1.push(...Array(tugasList.length).fill('Tugas'),'Rata Tugas','Semester','Nilai Akhir','Keterangan');
+      const h2=['',''];h2.push(...uhList,'',...tugasList,'','','','');
+      aoa.push(h1,h2);
+      for(let j=0;j<ts;j++){
+        const s=migrateStudent(c.students[j]||{name:`Siswa ${j+1}`});
+        let su=0,nu=0,st=0,nt=0;
+        s.uh.forEach(v=>{if(v!==''){su+=parseFloat(v);nu++;}});
+        s.tugas.forEach(v=>{if(v!==''){st+=parseFloat(v);nt++;}});
+        const au=nu?roundInt(su/nu):'',at=nt?roundInt(st/nt):'';
+        const sem=s.semester!==''?parseFloat(s.semester):'';
+        const ada=nu>0||nt>0||s.semester!=='';
+        let na='',ket='';
+        if(ada){
+          const nRaw=((nu?su/nu:0)+(nt?st/nt:0)+(s.semester!==''?parseFloat(s.semester):0))/3;
+          na=roundInt(nRaw);
+          ket=na<kktp?'✗ Belum Tuntas':'✓ Tuntas';
+        }
+        aoa.push([j+1,s.name,...s.uh,au,...s.tugas,at,sem,na,ket]);
+      }
+      if(i<indices.length-1){aoa.push([]);aoa.push([]);}
+    });
+    const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=buildExportCols();
+    XLSX.utils.book_append_sheet(wb,ws,'Rekap Nilai');
+    XLSX.writeFile(wb,`nilai-${mp}-gabungan-${indices.length}kelas.xlsx`);
+  }
+  closeExportModal();alert(`✓ Export berhasil! ${indices.length} kelas di-export ke Excel.`);
+}
+
+function backupData(){
+  flushSave();const app=collectAppState('full');
+  const blob=new Blob([JSON.stringify({...app,backupDate:new Date().toISOString()},null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  const sem=(app.semester||'semester').toLowerCase().replace(/[^a-z0-9]/g,'-');
+  const mp=(getMapelNameById(app.mapel)||'mapel').toLowerCase().replace(/[^a-z0-9]/g,'-');
+  a.download=`backup-nilai-${mp}-${sem}-TP-${app.tahun.replace(/[^\d]/g,'')||'data'}.json`;
+  a.click();URL.revokeObjectURL(a.href);alert('✓ Backup terunduh.');
+}
+function restoreData(event){
+  const file=event.target.files[0];if(!file)return;
+  if(!confirm('Restore akan MENGGANTI semua data saat ini. Lanjutkan?')){event.target.value='';return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const p=JSON.parse(e.target.result);
+      if(!Array.isArray(p.classData))throw new Error('Format file tidak valid');
+      clearTimeout(saveTimeout);
+      const legacy=(typeof p.totalSiswa==='number'&&p.totalSiswa>0)?p.totalSiswa:DEFAULT_JUMLAH_SISWA;
+      uhList=Array.isArray(p.uhList)&&p.uhList.length?[...p.uhList]:[...DEFAULT_UH];
+      tugasList=Array.isArray(p.tugasList)&&p.tugasList.length?[...p.tugasList]:[...DEFAULT_TUGAS];
+      classData=p.classData.map(c=>migrateClass(c,legacy));
+      if(!classData.length)initEmptyData();
+      if(Array.isArray(p.mapelList)&&p.mapelList.length){mapelList=p.mapelList;saveMapelList();renderMapelDropdown();}
+      setMapelValue(p.mapel);setKktpValue(p.kktp??DEFAULT_KKTP);
+      document.getElementById('guru').value=p.guru??'[Nama Anda, S.Pd.]';
+      document.getElementById('semester').value=p.semester??'Semester Gasal';
+      document.getElementById('tahun').value=p.tahun??'';
+      currentClass=0;
+      applyKktpFromCurrentClass();
+      updateStructureButtons();saveData();buildTabs();renderClass();
+      alert('✓ Data berhasil di-restore.');
+    }catch(err){alert('✗ Gagal membaca file: '+err.message);}
+  };
+  reader.readAsText(file);event.target.value='';
+}
+function showResetModal(){
+  const sel=document.getElementById('newMapelReset');
+  sel.innerHTML=mapelList.map(m=>`<option value="${m.id}">${esc(m.name)}</option>`).join('');
+  sel.value=document.getElementById('mapel').value;
+  document.getElementById('newKktp').value=document.getElementById('kktp').value;
+  document.getElementById('newSemester').value=document.getElementById('semester').value;
+  document.getElementById('newTahun').value=document.getElementById('tahun').value;
+  document.getElementById('newClassCount').value=classData.length||DEFAULT_CLASS_COUNT;
+  document.getElementById('defaultSiswaCount').value=classData[currentClass]?classData[currentClass].totalSiswa:DEFAULT_JUMLAH_SISWA;
+  document.getElementById('resetModal').classList.add('active');
+}
+function closeResetModal(){document.getElementById('resetModal').classList.remove('active');}
+function resetAllData(){
+  if(prompt('Ketik "RESET" (huruf kapital) untuk konfirmasi:')!=='RESET'){alert('Reset dibatalkan.');closeResetModal();return;}
+  clearTimeout(saveTimeout);
+  const mp=document.getElementById('newMapelReset').value,kk=document.getElementById('newKktp').value;
+  const sem=document.getElementById('newSemester').value.trim(),thn=document.getElementById('newTahun').value.trim();
+  const cnt=Math.max(1,Math.min(50,parseInt(document.getElementById('newClassCount').value)||DEFAULT_CLASS_COUNT));
+  const js=Math.max(1,Math.min(100,parseInt(document.getElementById('defaultSiswaCount').value)||DEFAULT_JUMLAH_SISWA));
+  initEmptyData(cnt,js);
+  classData.forEach(c=>{c.mapelId=mp;c.kktp=parseInt(kk);});
+  document.getElementById('mapel').value=mp;setKktpValue(kk);
+  document.getElementById('guru').value='[Nama Anda, S.Pd.]';
+  if(sem)document.getElementById('semester').value=sem;
+  if(thn)document.getElementById('tahun').value=thn;
+  currentClass=0;updateStructureButtons();saveData();buildTabs();renderClass();closeResetModal();
+  alert(`✓ Data direset (${cnt} kelas × ${js} siswa default).`);
+}
+
+function openPersistModal(){
+  flushSave();
+  document.querySelector('input[name="persistMode"][value="full"]').checked=true;
+  const app=collectAppState('full');
+  let terisi=0,bernilai=0,total=0;
+  app.classData.forEach(c=>{
+    total+=c.totalSiswa;
+    c.students.forEach(s=>{
+      if(!s)return;
+      if(s.name&&!s.name.startsWith('Siswa '))terisi++;
+      if(s.uh.some(v=>v!=='')||s.tugas.some(v=>v!=='')||s.semester!=='')bernilai++;
+    });
+  });
+  const counts=app.classData.map(c=>c.totalSiswa);
+  const mn=Math.min(...counts),mx=Math.max(...counts);
+  const info=mn===mx?`${mn} (seragam)`:`${mn}–${mx} (berbeda per kelas)`;
+  document.getElementById('persistSummary').innerHTML=
+    `<strong>Ringkasan:</strong><br>🏫 Kelas: <b>${app.classData.length}</b> &nbsp;|&nbsp; 👥 Siswa/kelas: <b>${info}</b><br>`+
+    `📝 UH: <b>${app.uhList.length}</b> &nbsp;|&nbsp; 📋 Tugas: <b>${app.tugasList.length}</b><br>`+
+    `👤 Nama terisi: <b>${terisi}</b> / ${total} &nbsp;|&nbsp; ✅ Bernilai: <b>${bernilai}</b><br>`+
+    `📖 ${esc(app.semester)} &nbsp;|&nbsp; 📅 TP ${esc(app.tahun)} &nbsp;|&nbsp; 🎯 KKTP: <b>${esc(app.kktp)}</b><br>`+
+    `👨‍🏫 Guru: <b>${esc(app.guru)}</b>`;
+  document.getElementById('persistModal').classList.add('active');
+}
+function closePersistModal(){document.getElementById('persistModal').classList.remove('active');}
+
+function downloadPersistentHtml(){
+  flushSave();
+  const mode=document.querySelector('input[name="persistMode"]:checked').value;
+  const app=collectAppState(mode);
+  const buildId=Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7);
+  const clone=document.documentElement.cloneNode(true);
+
+  ['tabs','class-content','mapelList','classList','strukturList','mappingList','newMapelReset',
+   'bakedInfo','persistSummary','strukturCountInfo','classCountInfo','siswaClassList','siswaSummary',
+   'exportClassList','exportSummary','exportCounter','printClassList','printSummary','printCounter']
+    .forEach(id=>{const el=clone.querySelector('#'+id);if(el)el.innerHTML='';});
+
+  clone.querySelectorAll('.modal-overlay').forEach(el=>el.classList.remove('active'));
+  const ms=clone.querySelector('#mapel');
+  if(ms)ms.innerHTML=app.mapelList.map(m=>`<option value="${m.id}"${String(m.id)===String(app.mapel)?' selected':''}>${esc(m.name)}</option>`).join('');
+  const ks=clone.querySelector('#kktp');
+  if(ks)ks.innerHTML=Array.from({length:11},(_,i)=>{const v=70+i;return `<option value="${v}"${String(v)===String(app.kktp)?' selected':''}>${v}</option>`;}).join('');
+
+  const vals={semester:app.semester,tahun:app.tahun,guru:app.guru};
+  Object.keys(vals).forEach(id=>{const el=clone.querySelector('#'+id);if(el){el.setAttribute('value',vals[id]);el.value=vals[id];}});
+
+  const activeSiswa=app.classData[0]?app.classData[0].totalSiswa:DEFAULT_JUMLAH_SISWA;
+  const bs=clone.querySelector('#btnManageSiswa');if(bs)bs.innerText=`👥 Kelola Jumlah Siswa (aktif: ${activeSiswa})`;
+  const bu=clone.querySelector('#btnManageUh');if(bu)bu.innerText=`📝 Kelola Ulangan Harian (${app.uhList.length})`;
+  const bt=clone.querySelector('#btnManageTugas');if(bt)bt.innerText=`📋 Kelola Tugas (${app.tugasList.length})`;
+  ['#equalizeCount','#defaultSiswaCount'].forEach(sel=>{const el=clone.querySelector(sel);if(el){el.value=activeSiswa;el.setAttribute('value',activeSiswa);}});
+  const status=clone.querySelector('#saveStatus');if(status)status.textContent='✓ Tersimpan';
+
+  let html='<!DOCTYPE html>\n'+clone.outerHTML;
+  const payload=JSON.stringify({buildId,bakedAt:new Date().toISOString(),mode,payload:app})
+    .replace(/</g,'\\u003c').replace(/>/g,'\\u003e').replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029');
+  const markerRe=/(<script\b[^>]*id="baked-data"[^>]*>)[\s\S]*?(<\/script>)/;
+  if(!markerRe.test(html)){alert('✗ Penanda data tidak ditemukan.');return;}
+  html=html.replace(markerRe,(m,open,close)=>open+payload+close);
+
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  const thn=(app.tahun||'tahun').replace(/[^\d]/g,'')||'tahun';
+  const sem=(app.semester||'semester').toLowerCase().replace(/[^a-z0-9]/g,'-');
+  a.download=`Daftar-Nilai-SMKN1GONDANG-${sem}-TP${thn}-${mode}.html`;
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+  closePersistModal();alert('✓ HTML final berhasil diunduh!');
+}
+
+initBakedStorage();
+loadMapelList();
+renderMapelDropdown();
+loadData();
+buildTabs();
+renderClass();
+updateBakedInfo();
+window.addEventListener('beforeunload',()=>{try{saveCurrentClassData();saveData();}catch(e){}});
+</script>
+</body>
+</html>
