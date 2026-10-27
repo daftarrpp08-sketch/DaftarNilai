@@ -248,12 +248,17 @@ th{background:#eee!important;-webkit-print-color-adjust:exact}
           <button class="menu-item" onclick="document.getElementById('restoreFile').click();closeUnifiedMenu();">📂 Restore JSON</button>
           <button class="menu-item item-danger" onclick="showResetModal();closeUnifiedMenu();">🗑️ Reset Data</button>
         </div>
+        <div class="menu-group">
+          <div class="menu-group-title">🌐 Google Spreadsheet &amp; File</div>
+          <button class="menu-item" onclick="openGasModal();closeUnifiedMenu();">🔗 Koneksi Google Spreadsheet</button>
+          <button class="menu-item" onclick="testGasConnection();closeUnifiedMenu();">🧪 Test Spreadsheet</button>
+          <button class="menu-item" onclick="openPersistModal();closeUnifiedMenu();">📦 Simpan &amp; Unduh HTML</button>
+        </div>
       </div>
     </div>
-    <div class="quick-excel-bar">
-      <button class="btn-template" onclick="downloadTemplate()" title="Download Template Excel Kelas Ini">📋 Template</button>
-      <button class="btn-import" onclick="document.getElementById('excelFile').click()" title="Import Excel ke Kelas Ini">📥 Import</button>
-      <button class="btn-export" onclick="exportExcel()" title="Export Excel Kelas Ini">💾 Export</button>
+    <div style="display:flex;align-items:center;gap:12px;font-size:12px;">
+      <span class="save-status" id="saveStatus">✓ Tersimpan</span>
+      <span class="sync-status" id="syncStatus" style="font-size:11px;color:#2980b9;font-style:italic">🌐 Sync: Ready</span>
     </div>
   </div>
   <input type="file" id="excelFileAll" style="display:none" accept=".xlsx,.xls" onchange="importExcelAll(event)">
@@ -262,32 +267,7 @@ th{background:#eee!important;-webkit-print-color-adjust:exact}
   <div class="class-print-title print-only">Kelas: <span id="printClassName"></span></div>
   <div id="class-content"></div>
 
-  <div class="btn-container no-print">
-    <div class="btn-group">
-      <button class="btn-print" onclick="printCurrentClass()">🖨️ Cetak Kelas Ini</button>
-      <button class="btn-print-multi" onclick="openPrintModal()">🖨️ Cetak Pilihan Kelas</button>
-      <button class="btn-print" onclick="printAllClasses()">🖨️ Cetak Semua Kelas</button>
-    </div>
-    <div class="btn-group">
-      <button class="btn-backup" onclick="backupData()">💾 Backup</button>
-      <button class="btn-restore" onclick="document.getElementById('restoreFile').click()">📂 Restore</button>
-      <input type="file" id="restoreFile" style="display:none" accept=".json" onchange="restoreData(event)">
-      <button class="btn-reset" onclick="showResetModal()">🗑️ Reset Data</button>
-      <span class="save-status" id="saveStatus">✓ Tersimpan</span>
-    </div>
-  </div>
-
-  <div class="permanent-panel no-print">
-    <div>
-      <h3>💾 Simpan Permanen ke HTML</h3>
-      <p>Semua perubahan dilekatkan ke dalam <strong>file HTML baru</strong>. File hasil unduhan inilah yang dibagikan.</p>
-      <div class="source-badge" id="bakedInfo"></div>
-    </div>
-    <div class="permanent-actions">
-      <button class="btn-persist" onclick="openPersistModal()">📦 Simpan &amp; Unduh HTML</button>
-      <button class="btn-revert" id="btnRevert" style="display:none" onclick="revertToBaked()">↩️ Kembali ke Data Asli File</button>
-    </div>
-  </div>
+  <input type="file" id="restoreFile" style="display:none" accept=".json" onchange="restoreData(event)">
 </div>
 
 <input type="file" id="excelFile" style="display:none" accept=".xlsx,.xls,.csv" onchange="importExcel(event)">
@@ -455,6 +435,39 @@ th{background:#eee!important;-webkit-print-color-adjust:exact}
   </div>
 </div></div>
 
+
+<div class="modal-overlay" id="gasModal"><div class="modal">
+  <h3 style="color:#2980b9">🌐 Koneksi Google Apps Script &amp; Spreadsheet</h3>
+  <p>Hubungkan aplikasi dengan Google Spreadsheet untuk sinkronisasi otomatis data daftar nilai siswa secara real-time / offline auto-sync.</p>
+
+  <div class="modal-field">
+    <label for="gasUrlInput">Web App URL Google Apps Script:</label>
+    <input type="url" id="gasUrlInput" placeholder="https://script.google.com/macros/s/.../exec">
+  </div>
+
+  <div style="background:#f8f9fa;border:1px solid #dcdcdc;padding:12px;border-radius:4px;margin:12px 0;">
+    <h4 style="font-size:12px;margin-bottom:6px;color:#2c3e50;">📖 Petunjuk Cara Koneksi Google Apps Script:</h4>
+    <ol style="font-size:11px;line-height:1.7;margin-left:18px;color:#444;">
+      <li>Buka Google Spreadsheet Anda di browser.</li>
+      <li>Klik menu <strong>Ekstensi</strong> &gt; <strong>Apps Script</strong>.</li>
+      <li>Hapus kode bawaan di editor, lalu tempelkan (paste) kode Apps Script di bawah.</li>
+    </ol>
+    <textarea id="gasCodeBox" readonly style="width:100%;height:100px;font-family:monospace;font-size:10px;margin-top:6px;padding:6px;border:1px solid #ccc;border-radius:3px;background:#fff;resize:vertical;"></textarea>
+    <button style="margin-top:6px;padding:4px 10px;font-size:11px;background:#34495e;color:#fff;" onclick="copyGasCode()">📋 Salin Kode Apps Script</button>
+    <ol start="4" style="font-size:11px;line-height:1.7;margin-left:18px;margin-top:8px;color:#444;">
+      <li>Klik tombol <strong>Deploy</strong> (Terapkan) &gt; <strong>Web app baru</strong>.</li>
+      <li>Pada <em>Who has access (Siapa yang memiliki akses)</em>, pilih <strong>Anyone (Siapa saja)</strong>.</li>
+      <li>Klik <strong>Deploy</strong>, izinkan akses akun (Grant Access), lalu salin <strong>Web App URL</strong> dan tempel di kolom di atas.</li>
+    </ol>
+  </div>
+
+  <div class="modal-actions">
+    <button class="btn-cancel" onclick="closeGasModal()">Batal</button>
+    <button style="background:#8e44ad;color:#fff;" onclick="testGasConnection()">🧪 Test Spreadsheet</button>
+    <button class="btn-save-item" onclick="saveGasUrl()">💾 Simpan &amp; Hubungkan</button>
+  </div>
+</div></div>
+
 <script id="baked-data" type="application/json">null</script>
 
 <script>
@@ -474,9 +487,113 @@ let currentStrukturKind='uh';
 
 function roundInt(v){ return Math.round(v); }
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function lsGet(k){try{const v=localStorage.getItem(k);return v!==null?v:(memoryStore[k]??null);}catch(e){storageOK=false;return memoryStore[k]??null;}}
-function lsSet(k,v){memoryStore[k]=v;try{localStorage.setItem(k,v);}catch(e){storageOK=false;}}
-function lsRemove(k){delete memoryStore[k];try{localStorage.removeItem(k);}catch(e){}}
+let dbPromise = null;
+function getDB() {
+  if (!dbPromise) {
+    dbPromise = new Promise((resolve) => {
+      if (typeof window === 'undefined' || !window.indexedDB) { resolve(null); return; }
+      const req = indexedDB.open('SMKN1GondangDB', 1);
+      req.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains('kv_store')) {
+          db.createObjectStore('kv_store');
+        }
+      };
+      req.onsuccess = (e) => resolve(e.target.result);
+      req.onerror = () => resolve(null);
+    });
+  }
+  return dbPromise;
+}
+
+async function idbGet(key) {
+  try {
+    const db = await getDB();
+    if (!db) return null;
+    return new Promise((resolve) => {
+      const tx = db.transaction('kv_store', 'readonly');
+      const store = tx.objectStore('kv_store');
+      const req = store.get(key);
+      req.onsuccess = () => resolve(req.result !== undefined ? req.result : null);
+      req.onerror = () => resolve(null);
+    });
+  } catch (e) { return null; }
+}
+
+async function idbSet(key, val) {
+  try {
+    const db = await getDB();
+    if (!db) return;
+    const tx = db.transaction('kv_store', 'readwrite');
+    const store = tx.objectStore('kv_store');
+    store.put(val, key);
+  } catch (e) {}
+}
+
+async function idbRemove(key) {
+  try {
+    const db = await getDB();
+    if (!db) return;
+    const tx = db.transaction('kv_store', 'readwrite');
+    const store = tx.objectStore('kv_store');
+    store.delete(key);
+  } catch (e) {}
+}
+
+async function initStorageCache() {
+  try {
+    const db = await getDB();
+    if (db) {
+      const keys = await new Promise((resolve) => {
+        const tx = db.transaction('kv_store', 'readonly');
+        const store = tx.objectStore('kv_store');
+        const req = store.getAllKeys();
+        req.onsuccess = () => resolve(req.result || []);
+        req.onerror = () => resolve([]);
+      });
+      for (const k of keys) {
+        const val = await idbGet(k);
+        if (val !== null) memoryStore[k] = val;
+      }
+    }
+  } catch (e) {}
+
+  try {
+    if (typeof localStorage !== 'undefined') {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && memoryStore[k] === undefined) {
+          const v = localStorage.getItem(k);
+          memoryStore[k] = v;
+          idbSet(k, v);
+        }
+      }
+    }
+  } catch (e) {}
+}
+
+function lsGet(k) {
+  if (memoryStore[k] !== undefined && memoryStore[k] !== null) return memoryStore[k];
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const v = localStorage.getItem(k);
+      if (v !== null) { memoryStore[k] = v; idbSet(k, v); return v; }
+    }
+  } catch (e) {}
+  return null;
+}
+
+function lsSet(k, v) {
+  memoryStore[k] = v;
+  idbSet(k, v);
+  try { if (typeof localStorage !== 'undefined') localStorage.setItem(k, v); } catch (e) { storageOK = false; }
+}
+
+function lsRemove(k) {
+  delete memoryStore[k];
+  idbRemove(k);
+  try { if (typeof localStorage !== 'undefined') localStorage.removeItem(k); } catch (e) {}
+}
 
 function initBakedStorage(){
   const el=document.getElementById('baked-data'); if(!el)return;
@@ -529,11 +646,268 @@ function migrateClass(c,fallback=DEFAULT_JUMLAH_SISWA){
     totalSiswa:(typeof c.totalSiswa==='number'&&c.totalSiswa>0)?c.totalSiswa:fallback
   };
 }
+
+const GAS_URL_KEY = 'smkn1gondang_gas_url';
+const GAS_QUEUE_KEY = 'smkn1gondang_gas_queue';
+let gasUrl = '';
+let gasQueue = [];
+
+const GAS_SCRIPT_CODE = `function doPost(e) {
+  try {
+    var contents = JSON.parse(e.postData.contents);
+    var action = contents.action;
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+
+    if (action === "test") {
+      var className = contents.className || "Daftar Nilai";
+      var headers = contents.headers || [];
+      var sheet = ss.getSheetByName(className) || ss.insertSheet(className);
+      if (headers.length > 0) {
+        sheet.clear();
+        sheet.getRange(1, 1, 1, headers.length).setValues([headers]).setFontWeight("bold").setBackground("#f0f0f0");
+      }
+      return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Koneksi berhasil! Kolom " + headers.length + " dibuat." }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    if (action === "sync") {
+      var className = contents.className || "Daftar Nilai";
+      var headers = contents.headers || [];
+      var rows = contents.rows || [];
+      var sheet = ss.getSheetByName(className) || ss.insertSheet(className);
+      sheet.clear();
+      if (headers.length > 0) {
+        sheet.getRange(1, 1, 1, headers.length).setValues([headers]).setFontWeight("bold").setBackground("#f0f0f0");
+      }
+      if (rows.length > 0) {
+        sheet.getRange(2, 1, rows.length, rows[0].length).setValues(rows);
+      }
+      return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Data " + className + " berhasil disinkronkan!" }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: "Aksi tidak dikenal" }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doGet(e) {
+  return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Google Apps Script Aktif" }))
+    .setMimeType(ContentService.MimeType.JSON);
+}`;
+
+function openGasModal() {
+  document.getElementById('gasUrlInput').value = gasUrl || '';
+  const codeBox = document.getElementById('gasCodeBox');
+  if (codeBox) codeBox.value = GAS_SCRIPT_CODE;
+  document.getElementById('gasModal').classList.add('active');
+}
+
+function closeGasModal() {
+  document.getElementById('gasModal').classList.remove('active');
+}
+
+function copyGasCode() {
+  const codeBox = document.getElementById('gasCodeBox');
+  if (codeBox) {
+    codeBox.select();
+    try {
+      navigator.clipboard.writeText(codeBox.value);
+      alert('✓ Kode Apps Script telah disalin ke clipboard!');
+    } catch (e) {
+      document.execCommand('copy');
+      alert('✓ Kode Apps Script telah disalin!');
+    }
+  }
+}
+
+function saveGasUrl() {
+  const input = document.getElementById('gasUrlInput').value.trim();
+  gasUrl = input;
+  lsSet(GAS_URL_KEY, gasUrl);
+  autoSave();
+  closeGasModal();
+  updateSyncStatus(gasUrl ? '🌐 Sync: Terhubung' : '🌐 Sync: Ready', gasUrl ? '#27ae60' : '#2980b9');
+  if (gasUrl) syncCurrentClassToGas();
+}
+
+function updateSyncStatus(msg, color) {
+  const el = document.getElementById('syncStatus');
+  if (el) {
+    el.innerText = msg;
+    if (color) el.style.color = color;
+  }
+}
+
+function getPrintFormatDataForClass(classIndex) {
+  const d = classData[classIndex];
+  if (!d) return { className: 'Daftar Nilai', headers: [], rows: [] };
+  const kktp = d.kktp || DEFAULT_KKTP;
+  const ts = d.totalSiswa || DEFAULT_JUMLAH_SISWA;
+
+  const headers = ['No', 'Nama Siswa', ...uhList, 'Rata UH', ...tugasList, 'Rata Tugas', 'Semester', 'Nilai Akhir', 'Keterangan'];
+  const rows = [];
+
+  for (let j = 0; j < ts; j++) {
+    const raw = (d.students || [])[j];
+    const s = migrateStudent(raw || { name: `Siswa ${j + 1}` });
+    let su = 0, nu = 0, st = 0, nt = 0;
+    s.uh.forEach(v => { if (v !== '') { su += parseFloat(v); nu++; } });
+    s.tugas.forEach(v => { if (v !== '') { st += parseFloat(v); nt++; } });
+
+    const au = nu ? roundInt(su / nu) : '-';
+    const at = nt ? roundInt(st / nt) : '-';
+    const sem = s.semester !== '' ? parseFloat(s.semester) : '-';
+    const countComps = (nu > 0 ? 1 : 0) + (nt > 0 ? 1 : 0) + (s.semester !== '' ? 1 : 0);
+
+    let na = '-', kt = '-';
+    if (countComps > 0) {
+      const valUH = nu ? su / nu : 0;
+      const valT = nt ? st / nt : 0;
+      const valS = s.semester !== '' ? parseFloat(s.semester) : 0;
+      const nRaw = (valUH + valT + valS) / countComps;
+      na = roundInt(nRaw);
+      kt = na < kktp ? '✗ Belum Tuntas' : '✓ Tuntas';
+    }
+
+    const row = [j + 1, s.name || `Siswa ${j + 1}`];
+    s.uh.forEach(v => row.push(v !== '' ? parseFloat(v) : '-'));
+    row.push(au);
+    s.tugas.forEach(v => row.push(v !== '' ? parseFloat(v) : '-'));
+    row.push(at, sem, na, kt);
+    rows.push(row);
+  }
+
+  return { className: d.name, headers, rows };
+}
+
+async function testGasConnection() {
+  const url = (document.getElementById('gasUrlInput').value || gasUrl).trim();
+  if (!url) {
+    alert('⚠️ Harap masukkan Web App URL Google Apps Script terlebih dahulu.');
+    return;
+  }
+
+  updateSyncStatus('🌐 Testing...', '#e67e22');
+  const classPayload = getPrintFormatDataForClass(currentClass);
+  const payload = {
+    action: 'test',
+    className: classPayload.className,
+    headers: classPayload.headers
+  };
+
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      mode: 'cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (data && data.status === 'success') {
+      alert('✅ ' + data.message + '\nNama kolom di Spreadsheet telah disesuaikan dengan format hasil cetak (' + classPayload.headers.join(', ') + ').');
+      updateSyncStatus('🌐 Sync: Terhubung', '#27ae60');
+    } else {
+      alert('⚠️ Respons Spreadsheet: ' + (data && data.message ? data.message : 'Gagal'));
+      updateSyncStatus('🌐 Sync: Gagal', '#c0392b');
+    }
+  } catch (err) {
+    alert('❌ Gagal terhubung ke Google Apps Script: ' + err.message + '\nPastikan Web App URL benar dan Akses set "Anyone" (Siapa saja).');
+    updateSyncStatus('🌐 Sync: Error', '#c0392b');
+  }
+}
+
+async function syncCurrentClassToGas() {
+  if (!gasUrl) return;
+  const classPayload = getPrintFormatDataForClass(currentClass);
+  const payload = {
+    action: 'sync',
+    className: classPayload.className,
+    headers: classPayload.headers,
+    rows: classPayload.rows,
+    timestamp: new Date().toISOString()
+  };
+
+  if (typeof navigator !== 'undefined' && !navigator.onLine) {
+    queueGasSync(payload);
+    updateSyncStatus('📶 Offline (Antrean ' + gasQueue.length + ')', '#d35400');
+    return;
+  }
+
+  try {
+    updateSyncStatus('🌐 Menyinkronkan...', '#f39c12');
+    const res = await fetch(gasUrl, {
+      method: 'POST',
+      mode: 'cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (data && data.status === 'success') {
+      updateSyncStatus('✓ Sync Spreadsheet', '#27ae60');
+    } else {
+      queueGasSync(payload);
+      updateSyncStatus('⚠️ Sync Ditunda', '#d35400');
+    }
+  } catch (e) {
+    queueGasSync(payload);
+    updateSyncStatus('📶 Offline Sync Saved', '#d35400');
+  }
+}
+
+function queueGasSync(payload) {
+  gasQueue.push(payload);
+  const map = new Map();
+  gasQueue.forEach(item => map.set(item.className, item));
+  gasQueue = Array.from(map.values());
+  lsSet(GAS_QUEUE_KEY, JSON.stringify(gasQueue));
+}
+
+async function processGasQueue() {
+  if (typeof navigator !== 'undefined' && !navigator.onLine) return;
+  if (!gasUrl || !gasQueue.length) return;
+  updateSyncStatus('🔄 Sending Offline Queue...', '#2980b9');
+  const queue = [...gasQueue];
+  gasQueue = [];
+  lsSet(GAS_QUEUE_KEY, JSON.stringify(gasQueue));
+
+  for (const item of queue) {
+    try {
+      await fetch(gasUrl, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(item)
+      });
+    } catch (e) {
+      queueGasSync(item);
+    }
+  }
+  if (!gasQueue.length) {
+    updateSyncStatus('✓ Sync Spreadsheet', '#27ae60');
+  } else {
+    updateSyncStatus('📶 Antrean Sync (' + gasQueue.length + ')', '#d35400');
+  }
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('online', () => {
+    updateSyncStatus('🌐 Online', '#27ae60');
+    processGasQueue();
+  });
+  window.addEventListener('offline', () => {
+    updateSyncStatus('📶 Offline Mode', '#d35400');
+  });
+}
+
 function collectAppState(mode='full'){
   return {version:7,mapel:String(document.getElementById('mapel').value),
     kktp:String(document.getElementById('kktp').value),guru:document.getElementById('guru').value,
     semester:document.getElementById('semester').value,tahun:document.getElementById('tahun').value,
-    currentClass:0,mapelList:JSON.parse(JSON.stringify(mapelList)),
+    gasUrl,currentClass:0,mapelList:JSON.parse(JSON.stringify(mapelList)),
     uhList:[...uhList],tugasList:[...tugasList],
     classData:classData.map(c=>{
       const ts=c.totalSiswa||DEFAULT_JUMLAH_SISWA;
@@ -555,7 +929,7 @@ function loadData(){
       setMapelValue(p.mapel);setKktpValue(p.kktp??75);
       document.getElementById('guru').value=p.guru??'[Nama Anda, S.Pd.]';
       document.getElementById('semester').value=p.semester??'Semester Gasal';
-      document.getElementById('tahun').value=p.tahun??'2026/2027';
+      document.getElementById('tahun').value=p.tahun??'2026/2027'; gasUrl=p.gasUrl||lsGet(GAS_URL_KEY)||''; try{gasQueue=JSON.parse(lsGet(GAS_QUEUE_KEY)||'[]');}catch(e){gasQueue=[];} if(gasUrl) updateSyncStatus('🌐 Sync: Terhubung','#27ae60');
       const idx=parseInt(p.currentClass);
       currentClass=(!isNaN(idx)&&idx>=0&&idx<classData.length)?idx:0;
     }catch(e){initEmptyData();setDefaultSelections();}
@@ -598,14 +972,14 @@ function saveData(){
     guru:document.getElementById('guru').value,semester:document.getElementById('semester').value,
     tahun:document.getElementById('tahun').value,currentClass,uhList,tugasList,
     classData:classData.map(c=>({name:c.name,students:(c.students||[]).slice(0,c.totalSiswa||DEFAULT_JUMLAH_SISWA).map(migrateStudent),mapelId:c.mapelId,kktp:c.kktp||DEFAULT_KKTP,totalSiswa:c.totalSiswa||DEFAULT_JUMLAH_SISWA}))};
-  lsSet(STORAGE_KEY,JSON.stringify(data));
+  data.gasUrl=gasUrl; lsSet(STORAGE_KEY,JSON.stringify(data));
   document.getElementById('saveStatus').innerText=storageOK?'✓ Tersimpan':'⚠ Hanya sesi ini';
 }
 function autoSave(){
   if(suppressAutoSave)return;
   clearTimeout(saveTimeout);
   document.getElementById('saveStatus').innerText='⏳ Menyimpan...';
-  saveTimeout=setTimeout(flushSave,400);
+  saveTimeout=setTimeout(()=>{ flushSave(); syncCurrentClassToGas(); },400);
 }
 function flushSave(){clearTimeout(saveTimeout);try{saveCurrentClassData();saveData();}catch(e){console.error(e);}}
 function onSemesterInput(){syncPrintInfo();autoSave();}
@@ -936,11 +1310,7 @@ function renderClass(){
       <label>Nama Kelas:</label>
       <input type="text" class="class-name-input" value="${esc(data.name)}" oninput="updateTabName(this.value)">
       <span class="class-siswa-badge">👥 ${ts} siswa · KKTP ${data.kktp||DEFAULT_KKTP}</span>
-      <div class="excel-btns">
-        <button class="btn-template" onclick="downloadTemplate()">📋 Template</button>
-        <button class="btn-import" onclick="document.getElementById('excelFile').click()"> Import</button>
-        <button class="btn-export" onclick="exportExcel()">💾 Export</button>
-      </div>
+
     </div>
     <div class="table-container">
     <table><thead><tr>
@@ -1762,13 +2132,18 @@ function downloadPersistentHtml(){
   closePersistModal();alert('✓ HTML final berhasil diunduh!');
 }
 
-initBakedStorage();
-loadMapelList();
-renderMapelDropdown();
-loadData();
-buildTabs();
-renderClass();
-updateBakedInfo();
+async function initApp() {
+  await initStorageCache();
+  initBakedStorage();
+  loadMapelList();
+  renderMapelDropdown();
+  loadData();
+  buildTabs();
+  renderClass();
+  updateBakedInfo();
+}
+initApp();
+
 function toggleUnifiedMenu(e){
   if(e)e.stopPropagation();
   const dropdown=document.getElementById('unifiedMenuDropdown');
