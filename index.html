@@ -363,15 +363,16 @@ th{background:#eee!important;-webkit-print-color-adjust:exact}
 </div></div>
 
 <div class="modal-overlay" id="classModal"><div class="modal">
-  <h3>🏫 Kelola Kelas, Mapel &amp; KKTP</h3>
-  <p>Setiap kelas memiliki <strong>mapel default</strong>, <strong>KKTP</strong>, dan <strong>jumlah siswa</strong> sendiri.</p>
+  <h3>🏫 Kelola Kelas, Mapel, KKTP &amp; Wali Kelas</h3>
+  <p>Setiap kelas memiliki <strong>mapel default</strong>, <strong>KKTP</strong>, <strong>Wali Kelas</strong>, dan <strong>jumlah siswa</strong> sendiri.</p>
   <div class="item-count-info" id="classCountInfo">Total kelas: 0</div>
   <div class="item-list" id="classList"></div>
-  <div class="add-item-form">
-    <input type="text" id="newClassName" placeholder="Nama kelas baru..." maxlength="50" onkeydown="if(event.key==='Enter')addClass()">
+  <div class="add-item-form" style="flex-wrap:wrap">
+    <input type="text" id="newClassName" placeholder="Nama kelas baru..." maxlength="50" style="flex:1;min-width:140px" onkeydown="if(event.key==='Enter')addClass()">
+    <input type="text" id="newClassWali" placeholder="Nama Wali Kelas..." maxlength="50" style="flex:1;min-width:140px" onkeydown="if(event.key==='Enter')addClass()">
     <button onclick="addClass()">+ Tambah Kelas</button>
   </div>
-  <div class="modal-hint">💡 Klik ✏️ Edit untuk mengubah nama, mapel, KKTP, dan jumlah siswa.</div>
+  <div class="modal-hint">💡 Klik ✏️ Edit untuk mengubah nama, Wali Kelas, mapel, KKTP, dan jumlah siswa.</div>
   <div class="modal-actions"><button class="btn-cancel" onclick="closeClassManager()">Tutup</button></div>
 </div></div>
 
@@ -627,7 +628,7 @@ function revertToBaked(){
 
 function initEmptyData(count=DEFAULT_CLASS_COUNT,defaultSiswa=DEFAULT_JUMLAH_SISWA){
   classData=[];
-  for(let i=0;i<count;i++)classData.push({name:`Kelas ${i+1}`,students:[],mapelId:null,kktp:DEFAULT_KKTP,totalSiswa:defaultSiswa});
+  for(let i=0;i<count;i++)classData.push({name:`Kelas ${i+1}`,students:[],mapelId:null,kktp:DEFAULT_KKTP,totalSiswa:defaultSiswa,waliKelas:''});
 }
 function migrateStudent(s){
   const b=s&&typeof s==='object'?s:{};
@@ -643,7 +644,8 @@ function migrateClass(c,fallback=DEFAULT_JUMLAH_SISWA){
     students:Array.isArray(c.students)?c.students.map(migrateStudent):[],
     mapelId:c.mapelId??null,
     kktp:(typeof c.kktp==='number'&&c.kktp>=70&&c.kktp<=80)?c.kktp:DEFAULT_KKTP,
-    totalSiswa:(typeof c.totalSiswa==='number'&&c.totalSiswa>0)?c.totalSiswa:fallback
+    totalSiswa:(typeof c.totalSiswa==='number'&&c.totalSiswa>0)?c.totalSiswa:fallback,
+    waliKelas:c.waliKelas||''
   };
 }
 
@@ -911,7 +913,7 @@ function collectAppState(mode='full'){
     uhList:[...uhList],tugasList:[...tugasList],
     classData:classData.map(c=>{
       const ts=c.totalSiswa||DEFAULT_JUMLAH_SISWA;
-      const out={name:c.name,students:(c.students||[]).slice(0,ts).map(migrateStudent),mapelId:c.mapelId,kktp:c.kktp||DEFAULT_KKTP,totalSiswa:ts};
+      const out={name:c.name,waliKelas:c.waliKelas||'',students:(c.students||[]).slice(0,ts).map(migrateStudent),mapelId:c.mapelId,kktp:c.kktp||DEFAULT_KKTP,totalSiswa:ts};
       if(mode==='fresh')out.students=Array.from({length:ts},(_,i)=>({name:`Siswa ${i+1}`,uh:uhList.map(()=>''),tugas:tugasList.map(()=>''),semester:''}));
       return out;
     })};
@@ -971,7 +973,7 @@ function saveData(){
   const data={mapel:document.getElementById('mapel').value,kktp:document.getElementById('kktp').value,
     guru:document.getElementById('guru').value,semester:document.getElementById('semester').value,
     tahun:document.getElementById('tahun').value,currentClass,uhList,tugasList,
-    classData:classData.map(c=>({name:c.name,students:(c.students||[]).slice(0,c.totalSiswa||DEFAULT_JUMLAH_SISWA).map(migrateStudent),mapelId:c.mapelId,kktp:c.kktp||DEFAULT_KKTP,totalSiswa:c.totalSiswa||DEFAULT_JUMLAH_SISWA}))};
+    classData:classData.map(c=>({name:c.name,waliKelas:c.waliKelas||'',students:(c.students||[]).slice(0,c.totalSiswa||DEFAULT_JUMLAH_SISWA).map(migrateStudent),mapelId:c.mapelId,kktp:c.kktp||DEFAULT_KKTP,totalSiswa:c.totalSiswa||DEFAULT_JUMLAH_SISWA}))};
   data.gasUrl=gasUrl; lsSet(STORAGE_KEY,JSON.stringify(data));
   document.getElementById('saveStatus').innerText=storageOK?'✓ Tersimpan':'⚠ Hanya sesi ini';
 }
@@ -1152,10 +1154,11 @@ function buildPrintDocument(indices,orientation,paper,showEmpty){
       </div>
       <div class="meta">
         <div><strong>Kelas:</strong> ${esc(d.name)} &nbsp;|&nbsp;
+          <strong>Wali Kelas:</strong> ${esc(d.waliKelas)||'-'} &nbsp;|&nbsp;
           <strong>Mata Pelajaran:</strong> ${esc(mapelName)} &nbsp;|&nbsp;
           <strong>Guru Pengampu:</strong> ${esc(guru)||'-'}</div>
         <div><strong>KKTP:</strong> ${esc(kktp)} &nbsp;|&nbsp;
-          <strong>Jumlah Siswa:</strong> ${ts} &nbsp;
+          <strong>Jumlah Siswa:</strong> ${ts}
           </div>
       </div>
       <table>
@@ -1305,12 +1308,10 @@ function renderClass(){
   if(data.students.length>ts)data.students.length=ts;
   const uhH=uhList.map(n=>`<th>${esc(n)}</th>`).join('');
   const tH=tugasList.map(n=>`<th>${esc(n)}</th>`).join('');
+  const waliBadge=data.waliKelas?` · 🧑‍🏫 Wali Kelas: ${esc(data.waliKelas)}`:'';
   let html=`
     <div class="class-name-edit no-print">
-      <label>Nama Kelas:</label>
-      <input type="text" class="class-name-input" value="${esc(data.name)}" oninput="updateTabName(this.value)">
-      <span class="class-siswa-badge">👥 ${ts} siswa · KKTP ${data.kktp||DEFAULT_KKTP}</span>
-
+      <span class="class-siswa-badge">🏫 ${esc(data.name)} · 👥 ${ts} siswa · KKTP ${data.kktp||DEFAULT_KKTP}${waliBadge}</span>
     </div>
     <div class="table-container">
     <table><thead><tr>
@@ -1501,16 +1502,18 @@ function addStruktur(){
   inp.value='';saveData();renderStrukturList();renderClass();updateStructureButtons();
 }
 
-function openClassManager(){renderClassManagerList();document.getElementById('newClassName').value='';document.getElementById('classModal').classList.add('active');}
+function openClassManager(){renderClassManagerList();const n=document.getElementById('newClassName'),w=document.getElementById('newClassWali');if(n)n.value='';if(w)w.value='';document.getElementById('classModal').classList.add('active');}
 function closeClassManager(){document.getElementById('classModal').classList.remove('active');}
 function renderClassManagerList(){
   document.getElementById('classCountInfo').innerText='Total kelas: '+classData.length;
   document.getElementById('classList').innerHTML=classData.length?classData.map((c,i)=>{
     const mapelName=getMapelNameById(c.mapelId)||'(belum diatur)';
     const kktp=c.kktp||DEFAULT_KKTP;
+    const wali=c.waliKelas||'-';
     return `
     <div class="item-row" data-idx="${i}">
       <span class="item-name">${esc(c.name)}</span>
+      <span class="item-mapel" style="background:#eaafce;color:#6b1246">🧑‍🏫 ${esc(wali)}</span>
       <span class="item-mapel">📚 ${esc(mapelName)}</span>
       <span class="item-mapel" style="background:#fef5e7;color:#d35400">🎯 KKTP ${kktp}</span>
       <span class="item-mapel" style="background:#d6eaf8;color:#1a5276">👥 ${c.totalSiswa||DEFAULT_JUMLAH_SISWA}</span>
@@ -1532,6 +1535,7 @@ function startEditClass(idx){
   document.querySelector(`#classList .item-row[data-idx="${idx}"]`).innerHTML=`
     <div class="edit-class-row">
       <input type="text" id="editClassInput" value="${esc(c.name)}" maxlength="50" placeholder="Nama kelas">
+      <input type="text" id="editClassWali" value="${esc(c.waliKelas||'')}" maxlength="50" placeholder="Wali Kelas">
       <select id="editClassMapel">${opts}</select>
       <select id="editClassKktp" title="KKTP">${kktpOpts}</select>
       <input type="number" id="editClassSiswa" min="1" max="100" value="${c.totalSiswa||DEFAULT_JUMLAH_SISWA}" style="width:70px" title="Jumlah siswa">
@@ -1544,6 +1548,7 @@ function startEditClass(idx){
 }
 function saveEditClass(idx){
   const name=document.getElementById('editClassInput').value.trim();
+  const waliKelas=document.getElementById('editClassWali').value.trim();
   const mapelId=document.getElementById('editClassMapel').value;
   const kktp=parseInt(document.getElementById('editClassKktp').value);
   const newSiswa=parseInt(document.getElementById('editClassSiswa').value);
@@ -1559,7 +1564,7 @@ function saveEditClass(idx){
     }
     if(lost&&!confirm(`️ ${lost} baris siswa memiliki data yang akan terhapus. Lanjutkan?`))return;
   }
-  classData[idx].name=name;classData[idx].mapelId=mapelId;classData[idx].kktp=kktp;
+  classData[idx].name=name;classData[idx].waliKelas=waliKelas;classData[idx].mapelId=mapelId;classData[idx].kktp=kktp;
   let st=classData[idx].students||[];
   if(st.length>newSiswa)st=st.slice(0,newSiswa);
   else while(st.length<newSiswa)st.push({name:`Siswa ${st.length+1}`,uh:uhList.map(()=>''),tugas:tugasList.map(()=>''),semester:''});
@@ -1569,7 +1574,6 @@ function saveEditClass(idx){
     document.getElementById('mapel').value=mapelId;
     document.getElementById('kktp').value=String(kktp);
     suppressAutoSave=false;
-    const i=document.querySelector('#class-content .class-name-input');if(i)i.value=name;
   }
   renderClassManagerList();buildTabs();renderClass();syncPrintInfo();updateStructureButtons();saveData();
 }
@@ -1587,12 +1591,13 @@ function deleteClass(idx){
 }
 function addClass(){
   const inp=document.getElementById('newClassName'),name=inp.value.trim();
+  const wInp=document.getElementById('newClassWali'),waliKelas=wInp?wInp.value.trim():'';
   if(!name){alert('Nama kelas tidak boleh kosong.');return;}
   flushSave();
   const ds=classData[currentClass]?classData[currentClass].totalSiswa:DEFAULT_JUMLAH_SISWA;
   const dk=classData[currentClass]?(classData[currentClass].kktp||DEFAULT_KKTP):DEFAULT_KKTP;
-  classData.push({name,students:[],mapelId:document.getElementById('mapel').value,kktp:dk,totalSiswa:ds});
-  currentClass=classData.length-1;inp.value='';
+  classData.push({name,waliKelas,students:[],mapelId:document.getElementById('mapel').value,kktp:dk,totalSiswa:ds});
+  currentClass=classData.length-1;inp.value='';if(wInp)wInp.value='';
   buildTabs();renderClass();saveData();renderClassManagerList();updateStructureButtons();
 }
 
