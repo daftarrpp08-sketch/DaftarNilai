@@ -252,13 +252,14 @@ th{background:#eee!important;-webkit-print-color-adjust:exact}
           <div class="menu-group-title">🌐 Google Spreadsheet &amp; File</div>
           <button class="menu-item" onclick="openGasModal();closeUnifiedMenu();">🔗 Koneksi Google Spreadsheet</button>
           <button class="menu-item" onclick="testGasConnection();closeUnifiedMenu();">🧪 Test Spreadsheet</button>
+          <button class="menu-item" onclick="syncAllClassesToGas();closeUnifiedMenu();">🔄 Sinkronkan Semua Kelas</button>
           <button class="menu-item" onclick="openPersistModal();closeUnifiedMenu();">📦 Simpan &amp; Unduh HTML</button>
         </div>
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:12px;font-size:12px;">
       <span class="save-status" id="saveStatus">✓ Tersimpan</span>
-      <span class="sync-status" id="syncStatus" style="font-size:11px;color:#2980b9;font-style:italic">🌐 Sync: Ready</span>
+      <span class="sync-status" id="syncStatus" style="font-size:11px;color:#2980b9;font-style:italic;cursor:pointer;" title="Klik untuk mencoba sinkronisasi sekarang" onclick="manualTriggerSync()">🌐 Sync: Ready</span>
     </div>
   </div>
   <input type="file" id="excelFileAll" style="display:none" accept=".xlsx,.xls" onchange="importExcelAll(event)">
@@ -732,7 +733,7 @@ function saveGasUrl() {
   lsSet(GAS_URL_KEY, gasUrl);
   autoSave();
   closeGasModal();
-  updateSyncStatus(gasUrl ? '🌐 Sync: Terhubung' : '🌐 Sync: Ready', gasUrl ? '#27ae60' : '#2980b9');
+  updateQueueDisplay();
   if (gasUrl) syncCurrentClassToGas();
 }
 
@@ -822,9 +823,9 @@ async function testGasConnection() {
   }
 }
 
-async function syncCurrentClassToGas() {
+function queueClassSync(classIndex) {
   if (!gasUrl) return;
-  const classPayload = getPrintFormatDataForClass(currentClass);
+  const classPayload = getPrintFormatDataForClass(classIndex);
   const payload = {
     action: 'sync',
     className: classPayload.className,
@@ -832,32 +833,27 @@ async function syncCurrentClassToGas() {
     rows: classPayload.rows,
     timestamp: new Date().toISOString()
   };
+  queueGasSync(payload);
+}
 
-  if (typeof navigator !== 'undefined' && !navigator.onLine) {
-    queueGasSync(payload);
-    updateSyncStatus('📶 Offline (Antrean ' + gasQueue.length + ')', '#d35400');
-    return;
+function queueAllClassesSync() {
+  if (!gasUrl) return;
+  for (let i = 0; i < classData.length; i++) {
+    const classPayload = getPrintFormatDataForClass(i);
+    const payload = {
+      action: 'sync',
+      className: classPayload.className,
+      headers: classPayload.headers,
+      rows: classPayload.rows,
+      timestamp: new Date().toISOString()
+    };
+    gasQueue.push(payload);
   }
-
-  try {
-    updateSyncStatus('🌐 Menyinkronkan...', '#f39c12');
-    const res = await fetch(gasUrl, {
-      method: 'POST',
-      mode: 'cors',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(payload)
-    });
-    const data = await res.json();
-    if (data && data.status === 'success') {
-      updateSyncStatus('✓ Sync Spreadsheet', '#27ae60');
-    } else {
-      queueGasSync(payload);
-      updateSyncStatus('⚠️ Sync Ditunda', '#d35400');
-    }
-  } catch (e) {
-    queueGasSync(payload);
-    updateSyncStatus('📶 Offline Sync Saved', '#d35400');
-  }
+  const map = new Map();
+  gasQueue.forEach(item => map.set(item.className, item));
+  gasQueue = Array.from(map.values());
+  lsSet(GAS_QUEUE_KEY, JSON.stringify(gasQueue));
+  updateQueueDisplay();
 }
 
 function queueGasSync(payload) {
@@ -866,43 +862,143 @@ function queueGasSync(payload) {
   gasQueue.forEach(item => map.set(item.className, item));
   gasQueue = Array.from(map.values());
   lsSet(GAS_QUEUE_KEY, JSON.stringify(gasQueue));
+  updateQueueDisplay();
 }
 
-async function processGasQueue() {
-  if (typeof navigator !== 'undefined' && !navigator.onLine) return;
-  if (!gasUrl || !gasQueue.length) return;
-  updateSyncStatus('🔄 Sending Offline Queue...', '#2980b9');
-  const queue = [...gasQueue];
-  gasQueue = [];
-  lsSet(GAS_QUEUE_KEY, JSON.stringify(gasQueue));
+function updateQueueDisplay() {
+  if (!gasUrl) {
+    updateSyncStatus('🌐 Sync: Belum Dihubungkan', '#7f8c8d');
+    return;
+  }
+  const isOnline = typeof navigator === 'undefined' || navigator.onLine !== false;
+  if (!isOnline) {
+    if (gasQueue.length > 0) {
+      updateSyncStatus(`📶 Offline (${gasQueue.length} kelas tertunda · tunggu internet)`, '#d35400');
+    } else {
+      updateSyncStatus('📶 Offline (Semua data tersimpan lokal)', '#7f8c8d');
+    }
+  } else {
+    if (gasQueue.length > 0) {
+      updateSyncStatus(`🔄 Antrean: ${gasQueue.length} kelas tertunda...`, '#e67e22');
+    } else {
+      updateSyncStatus('✓ Tersinkron ke Spreadsheet', '#27ae60');
+    }
+  }
+}
 
-  for (const item of queue) {
+let isSyncingQueue = false;
+
+async function processGasQueue() {
+  if (!gasUrl || !gasQueue.length) {
+    updateQueueDisplay();
+    return;
+  }
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+    updateQueueDisplay();
+    return;
+  }
+  if (isSyncingQueue) return;
+  isSyncingQueue = true;
+
+  updateSyncStatus(`🔄 Menyinkronkan ${gasQueue.length} kelas...`, '#2980b9');
+  const queueToProcess = [...gasQueue];
+  const remaining = [];
+
+  for (let i = 0; i < queueToProcess.length; i++) {
+    const item = queueToProcess[i];
     try {
-      await fetch(gasUrl, {
+      const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      const timeoutId = controller ? setTimeout(() => controller.abort(), 12000) : null;
+      const fetchOpts = {
         method: 'POST',
         mode: 'cors',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(item)
-      });
+      };
+      if (controller) fetchOpts.signal = controller.signal;
+
+      const res = await fetch(gasUrl, fetchOpts);
+      if (timeoutId) clearTimeout(timeoutId);
+
+      const data = await res.json();
+      if (!data || data.status !== 'success') {
+        remaining.push(item);
+      }
     } catch (e) {
-      queueGasSync(item);
+      remaining.push(item);
     }
   }
-  if (!gasQueue.length) {
-    updateSyncStatus('✓ Sync Spreadsheet', '#27ae60');
-  } else {
-    updateSyncStatus('📶 Antrean Sync (' + gasQueue.length + ')', '#d35400');
+
+  // Gabungkan remaining dengan item baru yang mungkin masuk saat loop
+  const currentMap = new Map();
+  remaining.forEach(item => currentMap.set(item.className, item));
+  gasQueue.forEach(item => {
+    if (!queueToProcess.some(processed => processed.className === item.className)) {
+      currentMap.set(item.className, item);
+    }
+  });
+  gasQueue = Array.from(currentMap.values());
+  lsSet(GAS_QUEUE_KEY, JSON.stringify(gasQueue));
+
+  isSyncingQueue = false;
+  updateQueueDisplay();
+}
+
+async function syncCurrentClassToGas() {
+  if (!gasUrl) return;
+  queueClassSync(currentClass);
+  await processGasQueue();
+}
+
+async function syncAllClassesToGas() {
+  if (!gasUrl) {
+    alert('⚠️ Harap masukkan dan simpan Web App URL Google Apps Script terlebih dahulu di menu Koneksi Google Spreadsheet.');
+    return;
   }
+  flushSave();
+  queueAllClassesSync();
+  const isOnline = typeof navigator === 'undefined' || navigator.onLine !== false;
+  if (!isOnline) {
+    alert(`📶 Mode Offline: Perubahan semua kelas (${gasQueue.length} kelas) telah disimpan ke antrean offline.\n\nSistem akan otomatis menyinkronkan data ke Google Spreadsheet saat perangkat kembali terhubung ke internet.`);
+    return;
+  }
+  await processGasQueue();
+}
+
+function manualTriggerSync() {
+  if (!gasUrl) {
+    openGasModal();
+    return;
+  }
+  flushSave();
+  queueClassSync(currentClass);
+  processGasQueue();
 }
 
 if (typeof window !== 'undefined') {
   window.addEventListener('online', () => {
-    updateSyncStatus('🌐 Online', '#27ae60');
+    updateSyncStatus('🌐 Online · Memulai sinkronisasi...', '#27ae60');
     processGasQueue();
   });
   window.addEventListener('offline', () => {
-    updateSyncStatus('📶 Offline Mode', '#d35400');
+    updateQueueDisplay();
   });
+  window.addEventListener('focus', () => {
+    if (typeof navigator === 'undefined' || navigator.onLine !== false) {
+      processGasQueue();
+    }
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && (typeof navigator === 'undefined' || navigator.onLine !== false)) {
+      processGasQueue();
+    }
+  });
+  // Heartbeat interval 15 detik untuk auto-retry antrean offline
+  setInterval(() => {
+    if (gasUrl && gasQueue.length > 0 && (typeof navigator === 'undefined' || navigator.onLine !== false)) {
+      processGasQueue();
+    }
+  }, 15000);
 }
 
 function collectAppState(mode='full'){
@@ -931,7 +1027,7 @@ function loadData(){
       setMapelValue(p.mapel);setKktpValue(p.kktp??75);
       document.getElementById('guru').value=p.guru??'[Nama Anda, S.Pd.]';
       document.getElementById('semester').value=p.semester??'Semester Gasal';
-      document.getElementById('tahun').value=p.tahun??'2026/2027'; gasUrl=p.gasUrl||lsGet(GAS_URL_KEY)||''; try{gasQueue=JSON.parse(lsGet(GAS_QUEUE_KEY)||'[]');}catch(e){gasQueue=[];} if(gasUrl) updateSyncStatus('🌐 Sync: Terhubung','#27ae60');
+      document.getElementById('tahun').value=p.tahun??'2026/2027'; gasUrl=p.gasUrl||lsGet(GAS_URL_KEY)||''; try{gasQueue=JSON.parse(lsGet(GAS_QUEUE_KEY)||'[]');}catch(e){gasQueue=[];} updateQueueDisplay();
       const idx=parseInt(p.currentClass);
       currentClass=(!isNaN(idx)&&idx>=0&&idx<classData.length)?idx:0;
     }catch(e){initEmptyData();setDefaultSelections();}
@@ -981,7 +1077,12 @@ function autoSave(){
   if(suppressAutoSave)return;
   clearTimeout(saveTimeout);
   document.getElementById('saveStatus').innerText='⏳ Menyimpan...';
-  saveTimeout=setTimeout(()=>{ flushSave(); syncCurrentClassToGas(); },400);
+  saveTimeout=setTimeout(()=>{
+    flushSave();
+    if(gasUrl){
+      syncCurrentClassToGas();
+    }
+  },400);
 }
 function flushSave(){clearTimeout(saveTimeout);try{saveCurrentClassData();saveData();}catch(e){console.error(e);}}
 function onSemesterInput(){syncPrintInfo();autoSave();}
@@ -1491,6 +1592,7 @@ function deleteStruktur(idx){
   flushSave();arr.splice(idx,1);
   classData.forEach(c=>(c.students||[]).forEach(s=>{if(s&&Array.isArray(s[kind]))s[kind].splice(idx,1);}));
   saveData();renderStrukturList();renderClass();updateStructureButtons();
+  if(gasUrl){queueAllClassesSync();processGasQueue();}
 }
 function addStruktur(){
   const kind=currentStrukturKind,arr=kind==='uh'?uhList:tugasList;
@@ -1500,6 +1602,7 @@ function addStruktur(){
   flushSave();arr.push(name);
   classData.forEach(c=>(c.students||[]).forEach(s=>{if(s&&Array.isArray(s[kind]))s[kind].push('');}));
   inp.value='';saveData();renderStrukturList();renderClass();updateStructureButtons();
+  if(gasUrl){queueAllClassesSync();processGasQueue();}
 }
 
 function openClassManager(){renderClassManagerList();const n=document.getElementById('newClassName'),w=document.getElementById('newClassWali');if(n)n.value='';if(w)w.value='';document.getElementById('classModal').classList.add('active');}
@@ -1576,18 +1679,24 @@ function saveEditClass(idx){
     suppressAutoSave=false;
   }
   renderClassManagerList();buildTabs();renderClass();syncPrintInfo();updateStructureButtons();saveData();
+  if(gasUrl){queueClassSync(idx);processGasQueue();}
 }
 function deleteClass(idx){
   if(classData.length===1){alert('Minimal harus ada 1 kelas.');return;}
   const c=classData[idx];
+  const deletedClassName=c.name;
   const filled=(c.students||[]).filter(s=>s&&s.name&&!s.name.startsWith('Siswa ')).length;
   let msg=`Hapus kelas "${c.name}"?`;
   if(filled)msg+=`\n\n⚠️ Ada ${filled} siswa dengan data nilai.`;
   if(!confirm(msg+'\n\nTidak bisa dibatalkan.'))return;
   flushSave();classData.splice(idx,1);
+  // Bersihkan antrean untuk kelas yang dihapus
+  gasQueue=gasQueue.filter(item=>item.className!==deletedClassName);
+  lsSet(GAS_QUEUE_KEY,JSON.stringify(gasQueue));
   if(currentClass>=classData.length)currentClass=classData.length-1;
   else if(currentClass>=idx)currentClass--;
   buildTabs();renderClass();saveData();renderClassManagerList();updateStructureButtons();
+  updateQueueDisplay();
 }
 function addClass(){
   const inp=document.getElementById('newClassName'),name=inp.value.trim();
@@ -1599,6 +1708,7 @@ function addClass(){
   classData.push({name,waliKelas,students:[],mapelId:document.getElementById('mapel').value,kktp:dk,totalSiswa:ds});
   currentClass=classData.length-1;inp.value='';if(wInp)wInp.value='';
   buildTabs();renderClass();saveData();renderClassManagerList();updateStructureButtons();
+  if(gasUrl){queueClassSync(currentClass);processGasQueue();}
 }
 
 const SISWA_PRESETS=[20,25,30,32,35,36,40];
@@ -1655,6 +1765,7 @@ function saveSiswaPerClass(){
     c.students=st;c.totalSiswa=n;
   });
   flushSave();updateStructureButtons();renderClass();closeSiswaManager();
+  if(gasUrl){queueAllClassesSync();processGasQueue();}
   alert('✓ Jumlah siswa per kelas berhasil diperbarui.');
 }
 
@@ -1826,7 +1937,9 @@ function importExcel(event){
       const ts=classData[currentClass].totalSiswa||DEFAULT_JUMLAH_SISWA;
       if(!confirm(`Kelas: ${classData[currentClass].name} (maks ${ts} siswa)\nDitemukan ${records.length} data siswa/nilai.\nLanjutkan import?`)){event.target.value='';return;}
       flushSave();const n=applyDataToClass(currentClass,records);
-      saveData();renderClass();alert(`✓ Import ${n} data siswa & nilai berhasil.`);
+      saveData();renderClass();
+      if(gasUrl){queueClassSync(currentClass);processGasQueue();}
+      alert(`✓ Import ${n} data siswa & nilai berhasil.`);
     }catch(err){alert('Gagal membaca file: '+err.message);}
     event.target.value='';
   };
@@ -1874,6 +1987,10 @@ function confirmMapping(){
     if(records.length){total+=applyDataToClass(ci,records);used.add(ci);}
   });
   saveData();buildTabs();renderClass();closeMappingModal();
+  if(gasUrl){
+    used.forEach(ci=>queueClassSync(ci));
+    processGasQueue();
+  }
   alert(`✓ Import berhasil: ${total} data di ${used.size} kelas.`);
 }
 function buildExportCols(){
@@ -2032,6 +2149,7 @@ function restoreData(event){
       currentClass=0;
       applyKktpFromCurrentClass();
       updateStructureButtons();saveData();buildTabs();renderClass();
+      if(gasUrl){queueAllClassesSync();processGasQueue();}
       alert('✓ Data berhasil di-restore.');
     }catch(err){alert('✗ Gagal membaca file: '+err.message);}
   };
@@ -2063,6 +2181,7 @@ function resetAllData(){
   if(sem)document.getElementById('semester').value=sem;
   if(thn)document.getElementById('tahun').value=thn;
   currentClass=0;updateStructureButtons();saveData();buildTabs();renderClass();closeResetModal();
+  if(gasUrl){queueAllClassesSync();processGasQueue();}
   alert(`✓ Data direset (${cnt} kelas × ${js} siswa default).`);
 }
 
@@ -2146,6 +2265,9 @@ async function initApp() {
   buildTabs();
   renderClass();
   updateBakedInfo();
+  if (gasUrl && (typeof navigator === 'undefined' || navigator.onLine !== false)) {
+    processGasQueue();
+  }
 }
 initApp();
 
